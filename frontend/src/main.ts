@@ -34,9 +34,9 @@ const vuetify = createVuetify({
   defaults: {
     VBtn:       { rounded: '0', elevation: 0 },
     VCard:      { rounded: '0', elevation: 0 },
-    VTextField: { rounded: '0', variant: 'outlined', density: 'comfortable' },
-    VSelect:    { rounded: '0', variant: 'outlined', density: 'comfortable' },
-    VTextarea:  { rounded: '0', variant: 'outlined', density: 'comfortable' },
+    VTextField: { rounded: '0', variant: 'outlined', density: 'comfortable', bgColor: '#1a2236' },
+    VSelect:    { rounded: '0', variant: 'outlined', density: 'comfortable', bgColor: '#1a2236' },
+    VTextarea:  { rounded: '0', variant: 'outlined', density: 'comfortable', bgColor: '#1a2236' },
     VChip:      { rounded: '0' },
     VAlert:     { rounded: '0' },
     VSnackbar:  { rounded: '0' },

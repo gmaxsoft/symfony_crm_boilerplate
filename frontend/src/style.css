@@ -19,10 +19,11 @@ html, body, #app {
 .fade-slide-enter-from   { opacity: 0; transform: translateY(8px); }
 .fade-slide-leave-to     { opacity: 0; transform: translateY(-8px); }
 
-/* Input icon areas — same background as the field itself */
+/* Input icon areas — inherit background from parent v-field */
 .v-field__prepend-inner,
 .v-field__append-inner {
-  background-color: transparent !important;
+  background-color: inherit !important;
+  background: inherit !important;
 }
 
 /* Table overrides */
