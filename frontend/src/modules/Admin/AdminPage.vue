@@ -2,15 +2,26 @@
   <div>
     <div class="d-flex align-center justify-space-between mb-5">
       <div>
-        <h2 class="page-heading">Użytkownicy systemu</h2>
-        <p class="page-sub">Zarządzanie kontami użytkowników CRM</p>
+        <h2 class="page-heading">
+          Użytkownicy systemu
+        </h2>
+        <p class="page-sub">
+          Zarządzanie kontami użytkowników CRM
+        </p>
       </div>
-      <v-btn color="success" prepend-icon="mdi-plus" @click="openCreate">
+      <v-btn
+        color="success"
+        prepend-icon="mdi-plus"
+        @click="openCreate"
+      >
         Nowy użytkownik
       </v-btn>
     </div>
 
-    <v-card color="#161c2d" border>
+    <v-card
+      color="#161c2d"
+      border
+    >
       <v-data-table
         :headers="headers"
         :items="users"
@@ -22,19 +33,32 @@
         <!-- Avatar + name -->
         <template #item.fullName="{ item }">
           <div class="d-flex align-center gap-2">
-            <v-avatar color="success" size="28" class="text-caption font-weight-bold">
+            <v-avatar
+              color="success"
+              size="28"
+              class="text-caption font-weight-bold"
+            >
               {{ initials(item) }}
             </v-avatar>
             <div>
-              <div class="text-body-2 font-weight-medium">{{ item.fullName }}</div>
-              <div class="text-caption text-medium-emphasis">{{ item.email }}</div>
+              <div class="text-body-2 font-weight-medium">
+                {{ item.fullName }}
+              </div>
+              <div class="text-caption text-medium-emphasis">
+                {{ item.email }}
+              </div>
             </div>
           </div>
         </template>
 
         <!-- Role chip -->
         <template #item.role="{ item }">
-          <v-chip :color="roleColor(item.role.name)" variant="tonal" size="x-small" label>
+          <v-chip
+            :color="roleColor(item.role.name)"
+            variant="tonal"
+            size="x-small"
+            label
+          >
             {{ item.role.name }}
           </v-chip>
         </template>
@@ -56,11 +80,27 @@
 
         <!-- Actions -->
         <template #item.actions="{ item }">
-          <v-btn icon size="x-small" variant="text" color="info" @click="openEdit(item)">
-            <v-icon size="16">mdi-pencil-outline</v-icon>
+          <v-btn
+            icon
+            size="x-small"
+            variant="text"
+            color="info"
+            @click="openEdit(item)"
+          >
+            <v-icon size="16">
+              mdi-pencil-outline
+            </v-icon>
           </v-btn>
-          <v-btn icon size="x-small" variant="text" color="error" @click="confirmDelete(item)">
-            <v-icon size="16">mdi-trash-can-outline</v-icon>
+          <v-btn
+            icon
+            size="x-small"
+            variant="text"
+            color="error"
+            @click="confirmDelete(item)"
+          >
+            <v-icon size="16">
+              mdi-trash-can-outline
+            </v-icon>
           </v-btn>
         </template>
       </v-data-table>
@@ -74,18 +114,41 @@
     />
 
     <!-- Delete confirm -->
-    <v-dialog v-model="deleteDialog" max-width="400">
-      <v-card color="#161c2d" border>
+    <v-dialog
+      v-model="deleteDialog"
+      max-width="400"
+    >
+      <v-card
+        color="#161c2d"
+        border
+      >
         <v-card-title class="dialog-title">
-          <v-icon start color="error" size="20">mdi-trash-can-outline</v-icon>Usuń użytkownika
+          <v-icon
+            start
+            color="error"
+            size="20"
+          >
+            mdi-trash-can-outline
+          </v-icon>Usuń użytkownika
         </v-card-title>
         <v-card-text class="text-body-2">
           Czy na pewno chcesz usunąć <strong>{{ deleteUser?.fullName }}</strong>?
         </v-card-text>
         <v-card-actions class="pa-4">
           <v-spacer />
-          <v-btn variant="text" @click="deleteDialog = false">Anuluj</v-btn>
-          <v-btn color="error" :loading="deleting" @click="doDelete">Usuń</v-btn>
+          <v-btn
+            variant="text"
+            @click="deleteDialog = false"
+          >
+            Anuluj
+          </v-btn>
+          <v-btn
+            color="error"
+            :loading="deleting"
+            @click="doDelete"
+          >
+            Usuń
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -144,18 +207,22 @@ function openCreate() { editUser.value = null; dialog.value = true }
 function openEdit(u: AdminUser) { editUser.value = u; dialog.value = true }
 function confirmDelete(u: AdminUser) { deleteUser.value = u; deleteDialog.value = true }
 
+type CreateUserPayload = Parameters<typeof adminApi.create>[0]
+type UpdateUserPayload = Parameters<typeof adminApi.update>[1]
+
 async function onSaved(data: Record<string, unknown>) {
   try {
     if (editUser.value) {
-      await adminApi.update(editUser.value.id, data as any)
+      await adminApi.update(editUser.value.id, data as unknown as UpdateUserPayload)
       notify('Użytkownik zaktualizowany.')
     } else {
-      await adminApi.create(data as any)
+      await adminApi.create(data as unknown as CreateUserPayload)
       notify('Użytkownik dodany.')
     }
     load()
-  } catch (e: any) {
-    notify(e.response?.data?.message ?? 'Błąd zapisu.', 'error')
+  } catch (e: unknown) {
+    const err = e as { response?: { data?: { message?: string } } }
+    notify(err.response?.data?.message ?? 'Błąd zapisu.', 'error')
   }
 }
 

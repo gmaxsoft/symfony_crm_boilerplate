@@ -1,13 +1,26 @@
 <template>
   <div class="login-wrap">
-    <v-card class="login-card" color="#161c2d" rounded="0">
+    <v-card
+      class="login-card"
+      color="#161c2d"
+      rounded="0"
+    >
       <!-- Header -->
       <div class="login-header">
         <div class="logo-ring">
-          <v-icon size="28" color="#4ade80">mdi-snake</v-icon>
+          <v-icon
+            size="28"
+            color="#4ade80"
+          >
+            mdi-snake
+          </v-icon>
         </div>
-        <h1 class="login-title">VENOM CRM</h1>
-        <p class="login-sub">System zarządzania relacjami z klientami</p>
+        <h1 class="login-title">
+          VENOM CRM
+        </h1>
+        <p class="login-sub">
+          System zarządzania relacjami z klientami
+        </p>
       </div>
 
       <v-card-text class="px-8 pt-2 pb-8">
@@ -21,7 +34,9 @@
           class="mb-5"
           closable
           @click:close="error = ''"
-        >{{ error }}</v-alert>
+        >
+          {{ error }}
+        </v-alert>
 
         <v-form @submit.prevent="submit">
           <label class="field-label">Adres e-mail</label>
@@ -60,7 +75,9 @@
             rounded="0"
             :loading="loading"
           >
-            <v-icon start>mdi-login</v-icon>
+            <v-icon start>
+              mdi-login
+            </v-icon>
             Zaloguj się
           </v-btn>
         </v-form>
@@ -97,13 +114,14 @@ async function submit() {
   try {
     await authStore.login(form.email, form.password)
     router.push('/dashboard')
-  } catch (e: any) {
-    if (!e.response) {
+  } catch (e: unknown) {
+    const err = e as { response?: { status: number; data?: { message?: string } } }
+    if (!err.response) {
       error.value = 'Błąd połączenia z serwerem. Upewnij się, że backend działa.'
-    } else if (e.response.status === 401) {
-      error.value = e.response.data?.message || 'Nieprawidłowy e-mail lub hasło.'
+    } else if (err.response.status === 401) {
+      error.value = err.response.data?.message || 'Nieprawidłowy e-mail lub hasło.'
     } else {
-      error.value = e.response.data?.message || `Błąd serwera (${e.response.status}). Spróbuj ponownie.`
+      error.value = err.response.data?.message || `Błąd serwera (${err.response.status}). Spróbuj ponownie.`
     }
   } finally {
     loading.value = false

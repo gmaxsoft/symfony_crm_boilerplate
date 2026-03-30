@@ -21,10 +21,11 @@ abstract class ApiTestCase extends WebTestCase
     protected KernelBrowser $client;
     protected EntityManagerInterface $em;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->em     = static::getContainer()->get(EntityManagerInterface::class);
+        $this->em = static::getContainer()->get(EntityManagerInterface::class);
     }
 
     // ── Helpers: tworzenie danych testowych ──────────────────────────────────
@@ -34,18 +35,18 @@ abstract class ApiTestCase extends WebTestCase
         $role = (new Role())->setName($name)->setDescription($description);
         $this->em->persist($role);
         $this->em->flush();
+
         return $role;
     }
 
     protected function createUser(
         string $email,
         string $password,
-        Role   $role,
+        Role $role,
         string $firstName = 'Test',
-        string $lastName  = 'User',
-        bool   $isActive  = true,
+        string $lastName = 'User',
+        bool $isActive = true,
     ): User {
-        /** @var UserPasswordHasherInterface $hasher */
         $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
 
         $user = (new User())
@@ -59,6 +60,7 @@ abstract class ApiTestCase extends WebTestCase
 
         $this->em->persist($user);
         $this->em->flush();
+
         return $user;
     }
 
@@ -73,21 +75,27 @@ abstract class ApiTestCase extends WebTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['email' => $email, 'password' => $password], JSON_THROW_ON_ERROR),
+            json_encode(['email' => $email, 'password' => $password], \JSON_THROW_ON_ERROR),
         );
 
         $data = json_decode((string) $this->client->getResponse()->getContent(), true);
         self::assertArrayHasKey('token', $data, 'Logowanie nie zwróciło tokenu JWT.');
+
         return $data['token'];
     }
 
     // ── Helpers: żądania HTTP ────────────────────────────────────────────────
 
+    /**
+     * @param (bool|int|string)[]|null $body
+     *
+     * @psalm-param array{name?: string, description?: 'Nowy opis'|'Opis nowej roli'|'X', email?: string, password?: string, firstName?: 'Nowe'|'Nowy'|'X', lastName?: 'ImieNazwisko'|'Uzytkownik'|'Y', roleId?: int, isActive?: bool, phone?: '+48 500 600 700', nip?: '1234567890', city?: 'Kraków', country?: 'Polska', status?: 'inactive'|'prospect'}|null $body
+     */
     protected function jsonRequest(
-        string  $method,
-        string  $uri,
-        mixed   $body   = null,
-        ?string $token  = null,
+        string $method,
+        string $uri,
+        ?array $body = null,
+        ?string $token = null,
     ): array {
         $headers = ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json'];
         if ($token !== null) {
@@ -100,7 +108,7 @@ abstract class ApiTestCase extends WebTestCase
             [],
             [],
             $headers,
-            $body !== null ? json_encode($body, JSON_THROW_ON_ERROR) : null,
+            $body !== null ? json_encode($body, \JSON_THROW_ON_ERROR) : null,
         );
 
         return json_decode((string) $this->client->getResponse()->getContent(), true) ?? [];

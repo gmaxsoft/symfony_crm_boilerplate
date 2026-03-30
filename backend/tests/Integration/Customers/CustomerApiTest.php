@@ -12,20 +12,13 @@ final class CustomerApiTest extends ApiTestCase
 {
     private string $token;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
         $role = $this->createRole(Role::ADMINISTRATOR);
         $this->createUser('admin@test.venom.pl', 'Test123!', $role);
         $this->token = $this->getToken('admin@test.venom.pl', 'Test123!');
-    }
-
-    private function createCustomer(string $name, string $status = 'active'): Customer
-    {
-        $customer = (new Customer())->setName($name)->setStatus($status);
-        $this->em->persist($customer);
-        $this->em->flush();
-        return $customer;
     }
 
     // ── GET /api/customers ────────────────────────────────────────────────────
@@ -68,20 +61,20 @@ final class CustomerApiTest extends ApiTestCase
     public function testCreateCustomerReturns201(): void
     {
         $data = $this->jsonRequest('POST', '/api/customers', [
-            'name'    => 'Nowy Kontrahent Sp. z o.o.',
-            'email'   => 'kontakt@nowy.pl',
-            'phone'   => '+48 500 600 700',
-            'nip'     => '1234567890',
-            'city'    => 'Kraków',
+            'name' => 'Nowy Kontrahent Sp. z o.o.',
+            'email' => 'kontakt@nowy.pl',
+            'phone' => '+48 500 600 700',
+            'nip' => '1234567890',
+            'city' => 'Kraków',
             'country' => 'Polska',
-            'status'  => 'prospect',
+            'status' => 'prospect',
         ], $this->token);
 
         $this->assertStatusCode(201);
-        self::assertSame('success',                      $data['status']);
-        self::assertSame('Nowy Kontrahent Sp. z o.o.',   $data['data']['name']);
-        self::assertSame('kontakt@nowy.pl',              $data['data']['email']);
-        self::assertSame('prospect',                     $data['data']['status']);
+        self::assertSame('success', $data['status']);
+        self::assertSame('Nowy Kontrahent Sp. z o.o.', $data['data']['name']);
+        self::assertSame('kontakt@nowy.pl', $data['data']['email']);
+        self::assertSame('prospect', $data['data']['status']);
         self::assertArrayHasKey('id', $data['data']);
     }
 
@@ -103,7 +96,7 @@ final class CustomerApiTest extends ApiTestCase
     {
         $customer = $this->createCustomer('ACME Detail');
 
-        $data = $this->jsonRequest('GET', '/api/customers/' . $customer->getId(), null, $this->token);
+        $data = $this->jsonRequest('GET', '/api/customers/' . (int) $customer->getId(), null, $this->token);
 
         $this->assertStatusCode(200);
         self::assertSame('ACME Detail', $data['data']['name']);
@@ -121,14 +114,14 @@ final class CustomerApiTest extends ApiTestCase
     {
         $customer = $this->createCustomer('Stara Nazwa', 'active');
 
-        $data = $this->jsonRequest('PUT', '/api/customers/' . $customer->getId(), [
-            'name'   => 'Nowa Nazwa',
+        $data = $this->jsonRequest('PUT', '/api/customers/' . (int) $customer->getId(), [
+            'name' => 'Nowa Nazwa',
             'status' => 'inactive',
         ], $this->token);
 
         $this->assertStatusCode(200);
         self::assertSame('Nowa Nazwa', $data['data']['name']);
-        self::assertSame('inactive',   $data['data']['status']);
+        self::assertSame('inactive', $data['data']['status']);
     }
 
     public function testUpdateNonExistentCustomerReturns404(): void
@@ -143,7 +136,7 @@ final class CustomerApiTest extends ApiTestCase
     {
         $customer = $this->createCustomer('Do usunięcia');
 
-        $this->jsonRequest('DELETE', '/api/customers/' . $customer->getId(), null, $this->token);
+        $this->jsonRequest('DELETE', '/api/customers/' . (int) $customer->getId(), null, $this->token);
 
         $this->assertStatusCode(204);
 
@@ -157,5 +150,14 @@ final class CustomerApiTest extends ApiTestCase
     {
         $this->jsonRequest('DELETE', '/api/customers/99999', null, $this->token);
         $this->assertStatusCode(404);
+    }
+
+    private function createCustomer(string $name, string $status = 'active'): Customer
+    {
+        $customer = (new Customer())->setName($name)->setStatus($status);
+        $this->em->persist($customer);
+        $this->em->flush();
+
+        return $customer;
     }
 }

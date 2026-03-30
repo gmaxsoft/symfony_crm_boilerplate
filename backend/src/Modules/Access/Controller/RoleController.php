@@ -13,11 +13,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/access/roles', name: 'access_roles_')]
 final class RoleController extends AbstractApiController
 {
-    public function __construct(private readonly RoleService $roleService) {}
-
-    private function serialize(\App\Modules\Access\Entity\Role $r): array
+    public function __construct(private readonly RoleService $roleService)
     {
-        return ['id' => $r->getId(), 'name' => $r->getName(), 'description' => $r->getDescription()];
     }
 
     /** GET /api/access/roles */
@@ -46,6 +43,7 @@ final class RoleController extends AbstractApiController
         }
 
         $role = $this->roleService->create($name, $data['description'] ?? null);
+
         return $this->success($this->serialize($role), 201);
     }
 
@@ -61,6 +59,7 @@ final class RoleController extends AbstractApiController
         }
 
         $role = $this->roleService->update($id, $name, $data['description'] ?? null);
+
         return $this->success($this->serialize($role));
     }
 
@@ -75,5 +74,10 @@ final class RoleController extends AbstractApiController
         }
 
         return $this->success(null, 204);
+    }
+
+    private function serialize(\App\Modules\Access\Entity\Role $r): array
+    {
+        return ['id' => $r->getId(), 'name' => $r->getName(), 'description' => $r->getDescription()];
     }
 }

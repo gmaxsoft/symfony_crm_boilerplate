@@ -8,6 +8,15 @@ use App\Shared\Contract\ModuleInterface;
 
 final class AuthModule implements ModuleInterface
 {
-    public static function getName(): string { return 'auth'; }
-    public static function getDescription(): string { return 'Autoryzacja i uwierzytelnianie uzytkownikow CRM.'; }
+    #[\Override]
+    public static function getName(): string
+    {
+        return 'auth';
+    }
+
+    #[\Override]
+    public static function getDescription(): string
+    {
+        return 'Autoryzacja i uwierzytelnianie uzytkownikow CRM.';
+    }
 }

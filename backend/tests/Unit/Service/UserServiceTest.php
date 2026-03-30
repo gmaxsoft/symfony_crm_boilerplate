@@ -16,22 +16,18 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class UserServiceTest extends TestCase
 {
-    private UserRepository&MockObject              $userRepo;
-    private RoleRepository&MockObject              $roleRepo;
+    private UserRepository&MockObject $userRepo;
+    private RoleRepository&MockObject $roleRepo;
     private UserPasswordHasherInterface&MockObject $hasher;
-    private UserService                            $service;
+    private UserService $service;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->userRepo = $this->createMock(UserRepository::class);
         $this->roleRepo = $this->createMock(RoleRepository::class);
-        $this->hasher   = $this->createMock(UserPasswordHasherInterface::class);
-        $this->service  = new UserService($this->userRepo, $this->roleRepo, $this->hasher);
-    }
-
-    private function makeRole(string $name = Role::ADMINISTRATOR): Role
-    {
-        return (new Role())->setName($name);
+        $this->hasher = $this->createMock(UserPasswordHasherInterface::class);
+        $this->service = new UserService($this->userRepo, $this->roleRepo, $this->hasher);
     }
 
     // ── findAll ───────────────────────────────────────────────────────────────
@@ -77,10 +73,10 @@ final class UserServiceTest extends TestCase
         $user = $this->service->create('jan@venom.pl', 'Haslo123!', 'Jan', 'Kowalski', 1);
 
         self::assertSame('jan@venom.pl', $user->getEmail());
-        self::assertSame('Jan',          $user->getFirstName());
-        self::assertSame('Kowalski',     $user->getLastName());
-        self::assertSame('$2y$hashed',   $user->getPassword());
-        self::assertSame($role,          $user->getRole());
+        self::assertSame('Jan', $user->getFirstName());
+        self::assertSame('Kowalski', $user->getLastName());
+        self::assertSame('$2y$hashed', $user->getPassword());
+        self::assertSame($role, $user->getRole());
         self::assertTrue($user->isActive());
     }
 
@@ -107,9 +103,9 @@ final class UserServiceTest extends TestCase
 
     public function testUpdateChangesUserFields(): void
     {
-        $role    = $this->makeRole(Role::SALESPERSON);
+        $role = $this->makeRole(Role::SALESPERSON);
         $newRole = $this->makeRole(Role::EMPLOYEE_ADMIN);
-        $user    = (new User())->setEmail('a@b.pl')->setFirstName('Old')->setLastName('Name')->setRole($role);
+        $user = (new User())->setEmail('a@b.pl')->setFirstName('Old')->setLastName('Name')->setRole($role);
 
         $this->userRepo->method('find')->willReturn($user);
         $this->roleRepo->method('find')->willReturn($newRole);
@@ -117,7 +113,7 @@ final class UserServiceTest extends TestCase
 
         $updated = $this->service->update(1, 'New', 'Name2', 2, false);
 
-        self::assertSame('New',   $updated->getFirstName());
+        self::assertSame('New', $updated->getFirstName());
         self::assertSame('Name2', $updated->getLastName());
         self::assertSame($newRole, $updated->getRole());
         self::assertFalse($updated->isActive());
@@ -190,5 +186,10 @@ final class UserServiceTest extends TestCase
 
         $this->expectException(NotFoundException::class);
         $this->service->delete(99);
+    }
+
+    private function makeRole(string $name = Role::ADMINISTRATOR): Role
+    {
+        return (new Role())->setName($name);
     }
 }

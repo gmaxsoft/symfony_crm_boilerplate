@@ -10,11 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 final class UserTest extends TestCase
 {
-    private function makeRole(string $name): Role
-    {
-        return (new Role())->setName($name);
-    }
-
     public function testIdIsNullByDefault(): void
     {
         self::assertNull((new User())->getId());
@@ -66,8 +61,8 @@ final class UserTest extends TestCase
     public function testCreatedAtIsSetOnConstruct(): void
     {
         $before = new \DateTimeImmutable();
-        $user   = new User();
-        $after  = new \DateTimeImmutable();
+        $user = new User();
+        $after = new \DateTimeImmutable();
 
         self::assertGreaterThanOrEqual($before, $user->getCreatedAt());
         self::assertLessThanOrEqual($after, $user->getCreatedAt());
@@ -98,9 +93,9 @@ final class UserTest extends TestCase
     public static function rolesNormalizationProvider(): array
     {
         return [
-            'Administrator'            => [Role::ADMINISTRATOR, 'ROLE_ADMINISTRATOR'],
+            'Administrator' => [Role::ADMINISTRATOR, 'ROLE_ADMINISTRATOR'],
             'Pracownik administracyjny' => [Role::EMPLOYEE_ADMIN, 'ROLE_PRACOWNIK_ADMINISTRACYJNY'],
-            'Handlowiec'               => [Role::SALESPERSON, 'ROLE_HANDLOWIEC'],
+            'Handlowiec' => [Role::SALESPERSON, 'ROLE_HANDLOWIEC'],
         ];
     }
 
@@ -110,5 +105,10 @@ final class UserTest extends TestCase
         $user->eraseCredentials();
         // Hasło NIE jest kasowane — celowe (stateless JWT nie wymaga kasowania)
         self::assertSame('secret', $user->getPassword());
+    }
+
+    private function makeRole(string $name): Role
+    {
+        return (new Role())->setName($name);
     }
 }

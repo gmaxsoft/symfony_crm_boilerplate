@@ -9,10 +9,11 @@ use App\Tests\Integration\ApiTestCase;
 
 final class AuthApiTest extends ApiTestCase
 {
-    private Role $role;
-    private const EMAIL    = 'admin@test.venom.pl';
+    private const EMAIL = 'admin@test.venom.pl';
     private const PASSWORD = 'Test123!';
+    private Role $role;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -25,7 +26,7 @@ final class AuthApiTest extends ApiTestCase
     public function testLoginWithValidCredentialsReturnsToken(): void
     {
         $data = $this->jsonRequest('POST', '/api/auth/login', [
-            'email'    => self::EMAIL,
+            'email' => self::EMAIL,
             'password' => self::PASSWORD,
         ]);
 
@@ -37,7 +38,7 @@ final class AuthApiTest extends ApiTestCase
     public function testLoginWithWrongPasswordReturns401(): void
     {
         $this->jsonRequest('POST', '/api/auth/login', [
-            'email'    => self::EMAIL,
+            'email' => self::EMAIL,
             'password' => 'ZleHaslo!',
         ]);
 
@@ -47,7 +48,7 @@ final class AuthApiTest extends ApiTestCase
     public function testLoginWithUnknownEmailReturns401(): void
     {
         $this->jsonRequest('POST', '/api/auth/login', [
-            'email'    => 'nieistnieje@venom.pl',
+            'email' => 'nieistnieje@venom.pl',
             'password' => 'cokolwiek',
         ]);
 
@@ -60,7 +61,7 @@ final class AuthApiTest extends ApiTestCase
         // lub 401 (brak credentials) w zależności od zawartości body
         $this->jsonRequest('POST', '/api/auth/login', ['email' => '', 'password' => '']);
         $status = $this->client->getResponse()->getStatusCode();
-        self::assertContains($status, [400, 401], "Oczekiwano 400 lub 401, otrzymano: $status");
+        self::assertContains($status, [400, 401], "Oczekiwano 400 lub 401, otrzymano: {$status}");
     }
 
     // ── GET /api/auth/me ──────────────────────────────────────────────────────
@@ -68,13 +69,13 @@ final class AuthApiTest extends ApiTestCase
     public function testMeWithValidTokenReturnsUserData(): void
     {
         $token = $this->getToken(self::EMAIL, self::PASSWORD);
-        $data  = $this->jsonRequest('GET', '/api/auth/me', null, $token);
+        $data = $this->jsonRequest('GET', '/api/auth/me', null, $token);
 
         $this->assertStatusCode(200);
         self::assertSame('success', $data['status']);
         self::assertSame(self::EMAIL, $data['data']['email']);
-        self::assertSame('Admin',    $data['data']['firstName']);
-        self::assertSame('Test',     $data['data']['lastName']);
+        self::assertSame('Admin', $data['data']['firstName']);
+        self::assertSame('Test', $data['data']['lastName']);
         self::assertSame('Admin Test', $data['data']['fullName']);
         self::assertSame(Role::ADMINISTRATOR, $data['data']['role']);
     }

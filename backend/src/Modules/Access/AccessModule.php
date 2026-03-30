@@ -8,6 +8,15 @@ use App\Shared\Contract\ModuleInterface;
 
 final class AccessModule implements ModuleInterface
 {
-    public static function getName(): string { return 'access'; }
-    public static function getDescription(): string { return 'Zarzadzanie uprawnieniami i rolami uzytkownikow.'; }
+    #[\Override]
+    public static function getName(): string
+    {
+        return 'access';
+    }
+
+    #[\Override]
+    public static function getDescription(): string
+    {
+        return 'Zarzadzanie uprawnieniami i rolami uzytkownikow.';
+    }
 }

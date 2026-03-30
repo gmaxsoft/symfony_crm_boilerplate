@@ -1,6 +1,5 @@
 <template>
   <v-app theme="venomDark">
-
     <!-- ── SIDEBAR ──────────────────────────────────────── -->
     <v-navigation-drawer
       v-model="drawer"
@@ -11,21 +10,43 @@
       class="sidebar"
     >
       <!-- Brand -->
-      <div class="brand" :class="{ 'brand--rail': rail }">
+      <div
+        class="brand"
+        :class="{ 'brand--rail': rail }"
+      >
         <div class="brand-icon-wrap">
-          <v-icon size="22" color="#4ade80">mdi-snake</v-icon>
+          <v-icon
+            size="22"
+            color="#4ade80"
+          >
+            mdi-snake
+          </v-icon>
         </div>
         <transition name="label-fade">
-          <span v-if="!rail" class="brand-name">VENOM CRM</span>
+          <span
+            v-if="!rail"
+            class="brand-name"
+          >VENOM CRM</span>
         </transition>
       </div>
 
       <v-divider class="sidebar-divider" />
 
       <!-- Navigation -->
-      <v-list nav density="compact" class="nav-list">
-        <template v-for="item in navItems" :key="item.to">
-          <v-tooltip :text="item.title" location="end" :disabled="!rail">
+      <v-list
+        nav
+        density="compact"
+        class="nav-list"
+      >
+        <template
+          v-for="item in navItems"
+          :key="item.to"
+        >
+          <v-tooltip
+            :text="item.title"
+            location="end"
+            :disabled="!rail"
+          >
             <template #activator="{ props }">
               <v-list-item
                 v-bind="props"
@@ -33,7 +54,7 @@
                 :prepend-icon="item.icon"
                 :title="rail ? undefined : item.title"
                 exact
-                  active-color="success"
+                active-color="success"
                 class="nav-item"
               />
             </template>
@@ -44,7 +65,11 @@
       <!-- Collapse toggle -->
       <template #append>
         <v-divider class="sidebar-divider mb-2" />
-        <v-list nav density="compact" class="nav-list pb-3">
+        <v-list
+          nav
+          density="compact"
+          class="nav-list pb-3"
+        >
           <v-list-item
             :prepend-icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
             :title="rail ? undefined : 'Zwiń menu'"
@@ -56,7 +81,11 @@
     </v-navigation-drawer>
 
     <!-- ── TOP BAR ───────────────────────────────────────── -->
-    <v-app-bar :height="58" class="topbar" elevation="0">
+    <v-app-bar
+      :height="58"
+      class="topbar"
+      elevation="0"
+    >
       <v-app-bar-title>
         <span class="page-title">{{ pageTitle }}</span>
       </v-app-bar-title>
@@ -89,7 +118,9 @@
             title="Wyloguj"
             @click="handleLogout"
           >
-            <v-icon size="18">mdi-logout-variant</v-icon>
+            <v-icon size="18">
+              mdi-logout-variant
+            </v-icon>
           </v-btn>
 
           <div class="mr-2" />
@@ -101,7 +132,10 @@
     <v-main class="main-content">
       <div class="pa-6">
         <router-view v-slot="{ Component }">
-          <transition name="fade-slide" mode="out-in">
+          <transition
+            name="fade-slide"
+            mode="out-in"
+          >
             <component :is="Component" />
           </transition>
         </router-view>
@@ -117,7 +151,6 @@
     >
       {{ snack.text }}
     </v-snackbar>
-
   </v-app>
 </template>
 

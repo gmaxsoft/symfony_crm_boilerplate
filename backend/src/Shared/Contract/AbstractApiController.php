@@ -13,18 +13,23 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 abstract class AbstractApiController extends AbstractController
 {
-    protected function success(mixed $data = null, int $status = 200): JsonResponse
+    /**
+     * @param (array|bool|int|mixed|string|null)[]|null $data
+     *
+     * @psalm-param array<array|bool|int|mixed|null|string>|null $data
+     */
+    protected function success(?array $data = null, int $status = 200): JsonResponse
     {
         return $this->json([
             'status' => 'success',
-            'data'   => $data,
+            'data' => $data,
         ], $status);
     }
 
     protected function error(string $message, int $status = 400): JsonResponse
     {
         return $this->json([
-            'status'  => 'error',
+            'status' => 'error',
             'message' => $message,
         ], $status);
     }
@@ -33,12 +38,12 @@ abstract class AbstractApiController extends AbstractController
     {
         return $this->json([
             'status' => 'success',
-            'data'   => $items,
-            'meta'   => [
-                'total'    => $total,
-                'page'     => $page,
+            'data' => $items,
+            'meta' => [
+                'total' => $total,
+                'page' => $page,
                 'per_page' => $perPage,
-                'pages'    => (int) ceil($total / $perPage),
+                'pages' => (int) ceil($total / $perPage),
             ],
         ]);
     }

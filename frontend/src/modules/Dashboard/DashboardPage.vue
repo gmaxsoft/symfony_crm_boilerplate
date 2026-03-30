@@ -3,26 +3,51 @@
     <!-- Header -->
     <div class="d-flex align-center justify-space-between mb-6">
       <div>
-        <h2 class="page-heading">Dashboard</h2>
+        <h2 class="page-heading">
+          Dashboard
+        </h2>
         <p class="page-sub">
           Witaj z powrotem,
           <span class="text-success">{{ authStore.user?.firstName }}</span>! —
           {{ dateStr }}
         </p>
       </div>
-      <v-chip color="success" variant="tonal" prepend-icon="mdi-circle" size="small">
+      <v-chip
+        color="success"
+        variant="tonal"
+        prepend-icon="mdi-circle"
+        size="small"
+      >
         System aktywny
       </v-chip>
     </div>
 
     <!-- Stat Cards -->
     <v-row class="mb-6">
-      <v-col v-for="s in statCards" :key="s.label" cols="12" sm="6" lg="3">
-        <v-card class="stat-card" color="#161c2d" border>
+      <v-col
+        v-for="s in statCards"
+        :key="s.label"
+        cols="12"
+        sm="6"
+        lg="3"
+      >
+        <v-card
+          class="stat-card"
+          color="#161c2d"
+          border
+        >
           <v-card-text>
             <div class="d-flex align-center justify-space-between mb-3">
-              <div class="stat-icon" :style="{ background: s.iconBg }">
-                <v-icon :color="s.iconColor" size="20">{{ s.icon }}</v-icon>
+              <div
+                class="stat-icon"
+                :style="{ background: s.iconBg }"
+              >
+                <v-icon
+                  :color="s.iconColor"
+                  size="20"
+                >
+                  {{ s.icon }}
+                </v-icon>
               </div>
               <span :class="['trend', s.trendUp ? 'trend--up' : 'trend--neutral']">
                 {{ s.trendLabel }}
@@ -30,11 +55,18 @@
             </div>
             <div class="stat-value">
               <template v-if="loading">
-                <v-skeleton-loader type="text" width="60" />
+                <v-skeleton-loader
+                  type="text"
+                  width="60"
+                />
               </template>
-              <template v-else>{{ s.value }}</template>
+              <template v-else>
+                {{ s.value }}
+              </template>
             </div>
-            <div class="stat-label">{{ s.label }}</div>
+            <div class="stat-label">
+              {{ s.label }}
+            </div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -43,15 +75,32 @@
     <!-- Charts Row -->
     <v-row>
       <!-- Main Sparkline -->
-      <v-col cols="12" lg="8">
-        <v-card color="#161c2d" border class="chart-card">
+      <v-col
+        cols="12"
+        lg="8"
+      >
+        <v-card
+          color="#161c2d"
+          border
+          class="chart-card"
+        >
           <v-card-text>
             <div class="d-flex align-center justify-space-between mb-1">
               <div>
-                <div class="chart-title">Aktywność systemu</div>
-                <div class="chart-sub">Nowi kontrahenci — ostatnie 12 miesięcy</div>
+                <div class="chart-title">
+                  Aktywność systemu
+                </div>
+                <div class="chart-sub">
+                  Nowi kontrahenci — ostatnie 12 miesięcy
+                </div>
               </div>
-              <v-chip color="success" variant="tonal" size="x-small">Live</v-chip>
+              <v-chip
+                color="success"
+                variant="tonal"
+                size="x-small"
+              >
+                Live
+              </v-chip>
             </div>
 
             <v-sparkline
@@ -67,30 +116,64 @@
 
             <!-- Month labels -->
             <div class="month-labels">
-              <span v-for="m in months" :key="m">{{ m }}</span>
+              <span
+                v-for="m in months"
+                :key="m"
+              >{{ m }}</span>
             </div>
           </v-card-text>
         </v-card>
       </v-col>
 
       <!-- Quick Stats panel -->
-      <v-col cols="12" lg="4">
-        <v-card color="#161c2d" border class="chart-card" height="100%">
+      <v-col
+        cols="12"
+        lg="4"
+      >
+        <v-card
+          color="#161c2d"
+          border
+          class="chart-card"
+          height="100%"
+        >
           <v-card-text>
-            <div class="chart-title mb-4">Skrócone statystyki</div>
+            <div class="chart-title mb-4">
+              Skrócone statystyki
+            </div>
 
-            <div v-if="loading" class="d-flex justify-center py-8">
-              <v-progress-circular indeterminate color="success" size="36" />
+            <div
+              v-if="loading"
+              class="d-flex justify-center py-8"
+            >
+              <v-progress-circular
+                indeterminate
+                color="success"
+                size="36"
+              />
             </div>
 
             <template v-else>
-              <div v-for="item in quickStats" :key="item.label" class="quick-stat">
+              <div
+                v-for="item in quickStats"
+                :key="item.label"
+                class="quick-stat"
+              >
                 <div class="d-flex align-center gap-3">
-                  <div class="quick-icon" :style="{ background: item.bg }">
-                    <v-icon :color="item.color" size="16">{{ item.icon }}</v-icon>
+                  <div
+                    class="quick-icon"
+                    :style="{ background: item.bg }"
+                  >
+                    <v-icon
+                      :color="item.color"
+                      size="16"
+                    >
+                      {{ item.icon }}
+                    </v-icon>
                   </div>
                   <div class="flex-1">
-                    <div class="quick-label">{{ item.label }}</div>
+                    <div class="quick-label">
+                      {{ item.label }}
+                    </div>
                     <v-progress-linear
                       :model-value="item.pct"
                       :color="item.color"
@@ -99,7 +182,9 @@
                       class="mt-1"
                     />
                   </div>
-                  <div class="quick-val">{{ item.val }}</div>
+                  <div class="quick-val">
+                    {{ item.val }}
+                  </div>
                 </div>
               </div>
             </template>
@@ -110,14 +195,29 @@
 
     <!-- Bottom Row -->
     <v-row class="mt-0">
-      <v-col cols="12" sm="4" v-for="mini in miniCards" :key="mini.title">
-        <v-card color="#161c2d" border>
+      <v-col
+        v-for="mini in miniCards"
+        :key="mini.title"
+        cols="12"
+        sm="4"
+      >
+        <v-card
+          color="#161c2d"
+          border
+        >
           <v-card-text>
             <div class="d-flex align-center justify-space-between mb-3">
               <span class="chart-sub">{{ mini.title }}</span>
-              <v-icon :color="mini.color" size="18">{{ mini.icon }}</v-icon>
+              <v-icon
+                :color="mini.color"
+                size="18"
+              >
+                {{ mini.icon }}
+              </v-icon>
             </div>
-            <div class="stat-value text-h5">{{ loading ? '—' : mini.value }}</div>
+            <div class="stat-value text-h5">
+              {{ loading ? '—' : mini.value }}
+            </div>
             <v-sparkline
               :value="mini.data"
               :color="mini.color"

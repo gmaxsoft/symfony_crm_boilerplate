@@ -14,6 +14,6 @@ class NotFoundException extends NotFoundHttpException
 {
     public static function forId(string $resource, int|string $id): self
     {
-        return new self(sprintf('%s with ID "%s" not found.', $resource, $id));
+        return new self(\sprintf('%s with ID "%s" not found.', $resource, $id));
     }
 }

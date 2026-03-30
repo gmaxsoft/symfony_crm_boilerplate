@@ -11,10 +11,11 @@ final class RoleApiTest extends ApiTestCase
 {
     private string $token;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
-        $role        = $this->createRole(Role::ADMINISTRATOR);
+        $role = $this->createRole(Role::ADMINISTRATOR);
         $this->createUser('admin@test.venom.pl', 'Test123!', $role);
         $this->token = $this->getToken('admin@test.venom.pl', 'Test123!');
     }
@@ -31,7 +32,7 @@ final class RoleApiTest extends ApiTestCase
         $this->assertStatusCode(200);
         self::assertSame('success', $data['status']);
         // Są 2 nowe + 1 admin = 3 łącznie
-        self::assertGreaterThanOrEqual(3, count($data['data']));
+        self::assertGreaterThanOrEqual(3, \count($data['data']));
     }
 
     public function testListRolesRequiresAuthentication(): void
@@ -45,14 +46,14 @@ final class RoleApiTest extends ApiTestCase
     public function testCreateRoleReturns201(): void
     {
         $data = $this->jsonRequest('POST', '/api/access/roles', [
-            'name'        => 'Nowa Rola',
+            'name' => 'Nowa Rola',
             'description' => 'Opis nowej roli',
         ], $this->token);
 
         $this->assertStatusCode(201);
         self::assertSame('success', $data['status']);
-        self::assertSame('Nowa Rola',         $data['data']['name']);
-        self::assertSame('Opis nowej roli',    $data['data']['description']);
+        self::assertSame('Nowa Rola', $data['data']['name']);
+        self::assertSame('Opis nowej roli', $data['data']['description']);
         self::assertArrayHasKey('id', $data['data']);
     }
 
@@ -74,14 +75,14 @@ final class RoleApiTest extends ApiTestCase
     {
         $role = $this->createRole('Stara Nazwa', 'Stary opis');
 
-        $data = $this->jsonRequest('PUT', '/api/access/roles/' . $role->getId(), [
-            'name'        => 'Nowa Nazwa',
+        $data = $this->jsonRequest('PUT', '/api/access/roles/' . (int) $role->getId(), [
+            'name' => 'Nowa Nazwa',
             'description' => 'Nowy opis',
         ], $this->token);
 
         $this->assertStatusCode(200);
         self::assertSame('Nowa Nazwa', $data['data']['name']);
-        self::assertSame('Nowy opis',  $data['data']['description']);
+        self::assertSame('Nowy opis', $data['data']['description']);
     }
 
     public function testUpdateNonExistentRoleReturns404(): void
@@ -96,7 +97,7 @@ final class RoleApiTest extends ApiTestCase
     {
         $role = $this->createRole('Do usunięcia');
 
-        $this->jsonRequest('DELETE', '/api/access/roles/' . $role->getId(), null, $this->token);
+        $this->jsonRequest('DELETE', '/api/access/roles/' . (int) $role->getId(), null, $this->token);
 
         $this->assertStatusCode(204);
     }
@@ -106,7 +107,7 @@ final class RoleApiTest extends ApiTestCase
         $role = $this->createRole('Rola z użytkownikiem');
         $this->createUser('user2@test.venom.pl', 'Pass123!', $role);
 
-        $data = $this->jsonRequest('DELETE', '/api/access/roles/' . $role->getId(), null, $this->token);
+        $data = $this->jsonRequest('DELETE', '/api/access/roles/' . (int) $role->getId(), null, $this->token);
 
         $this->assertStatusCode(409);
         self::assertStringContainsString('użytkowni', strtolower($data['message'] ?? ''));

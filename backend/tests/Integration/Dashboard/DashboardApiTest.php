@@ -12,6 +12,7 @@ final class DashboardApiTest extends ApiTestCase
 {
     private string $token;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -30,7 +31,7 @@ final class DashboardApiTest extends ApiTestCase
         self::assertSame('success', $data['status']);
         self::assertArrayHasKey('stats', $data['data']);
         self::assertArrayHasKey('customers', $data['data']['stats']);
-        self::assertArrayHasKey('users',     $data['data']['stats']);
+        self::assertArrayHasKey('users', $data['data']['stats']);
         self::assertIsInt($data['data']['stats']['customers']);
         self::assertIsInt($data['data']['stats']['users']);
     }

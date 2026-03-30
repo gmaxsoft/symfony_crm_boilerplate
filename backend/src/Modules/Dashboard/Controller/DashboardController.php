@@ -15,8 +15,9 @@ final class DashboardController extends AbstractApiController
 {
     public function __construct(
         private readonly CustomerRepository $customerRepository,
-        private readonly UserRepository     $userRepository,
-    ) {}
+        private readonly UserRepository $userRepository,
+    ) {
+    }
 
     /**
      * GET /api/dashboard
@@ -28,7 +29,7 @@ final class DashboardController extends AbstractApiController
         return $this->success([
             'stats' => [
                 'customers' => $this->customerRepository->count([]),
-                'users'     => $this->userRepository->count(['isActive' => true]),
+                'users' => $this->userRepository->count(['isActive' => true]),
             ],
             'notice' => 'Moduł Dashboard jest w budowie.',
         ]);

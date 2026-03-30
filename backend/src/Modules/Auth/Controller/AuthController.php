@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Auth\Controller;
 
+use App\Modules\Admin\Entity\User;
 use App\Shared\Contract\AbstractApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use App\Modules\Admin\Entity\User;
 
 #[Route('/api/auth', name: 'auth_')]
 final class AuthController extends AbstractApiController
@@ -39,13 +39,13 @@ final class AuthController extends AbstractApiController
         }
 
         return $this->success([
-            'id'        => $user->getId(),
-            'email'     => $user->getEmail(),
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
             'firstName' => $user->getFirstName(),
-            'lastName'  => $user->getLastName(),
-            'fullName'  => $user->getFullName(),
-            'role'      => $user->getRole()->getName(),
-            'isActive'  => $user->isActive(),
+            'lastName' => $user->getLastName(),
+            'fullName' => $user->getFullName(),
+            'role' => $user->getRole()->getName(),
+            'isActive' => $user->isActive(),
         ]);
     }
 }

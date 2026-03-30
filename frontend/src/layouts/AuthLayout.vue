@@ -1,5 +1,8 @@
 <template>
-  <v-app theme="venomDark" class="auth-bg">
+  <v-app
+    theme="venomDark"
+    class="auth-bg"
+  >
     <v-main class="d-flex align-center justify-center">
       <router-view />
     </v-main>

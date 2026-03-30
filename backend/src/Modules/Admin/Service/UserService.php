@@ -13,10 +13,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserService
 {
     public function __construct(
-        private readonly UserRepository              $userRepository,
-        private readonly RoleRepository              $roleRepository,
+        private readonly UserRepository $userRepository,
+        private readonly RoleRepository $roleRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
-    ) {}
+    ) {
+    }
 
     /** @return User[] */
     public function findAll(): array
@@ -35,8 +36,8 @@ class UserService
         string $plainPassword,
         string $firstName,
         string $lastName,
-        int    $roleId,
-        bool   $isActive = true,
+        int $roleId,
+        bool $isActive = true,
     ): User {
         $role = $this->roleRepository->find($roleId)
             ?? throw NotFoundException::forId('Role', $roleId);
@@ -51,15 +52,16 @@ class UserService
         $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
 
         $this->userRepository->save($user);
+
         return $user;
     }
 
     public function update(
-        int     $id,
-        string  $firstName,
-        string  $lastName,
-        int     $roleId,
-        bool    $isActive,
+        int $id,
+        string $firstName,
+        string $lastName,
+        int $roleId,
+        bool $isActive,
         ?string $plainPassword = null,
     ): User {
         $user = $this->findById($id);
@@ -76,6 +78,7 @@ class UserService
         }
 
         $this->userRepository->save($user);
+
         return $user;
     }
 

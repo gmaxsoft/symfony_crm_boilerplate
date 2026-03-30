@@ -10,7 +10,9 @@ use App\Shared\Exception\NotFoundException;
 
 class RoleService
 {
-    public function __construct(private readonly RoleRepository $roleRepository) {}
+    public function __construct(private readonly RoleRepository $roleRepository)
+    {
+    }
 
     /** @return Role[] */
     public function findAll(): array
@@ -31,6 +33,7 @@ class RoleService
             ->setDescription($description);
 
         $this->roleRepository->save($role);
+
         return $role;
     }
 
@@ -39,6 +42,7 @@ class RoleService
         $role = $this->findById($id);
         $role->setName($name)->setDescription($description);
         $this->roleRepository->save($role);
+
         return $role;
     }
 

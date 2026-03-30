@@ -3,19 +3,38 @@
     <!-- Header -->
     <div class="d-flex align-center justify-space-between mb-5">
       <div>
-        <h2 class="page-heading">Kontrahenci</h2>
-        <p class="page-sub">Zarządzanie kontrahentami systemu CRM</p>
+        <h2 class="page-heading">
+          Kontrahenci
+        </h2>
+        <p class="page-sub">
+          Zarządzanie kontrahentami systemu CRM
+        </p>
       </div>
-      <v-btn color="success" prepend-icon="mdi-plus" @click="openCreate">
+      <v-btn
+        color="success"
+        prepend-icon="mdi-plus"
+        @click="openCreate"
+      >
         Nowy kontrahent
       </v-btn>
     </div>
 
     <!-- Filters -->
-    <v-card color="#161c2d" border class="mb-5">
+    <v-card
+      color="#161c2d"
+      border
+      class="mb-5"
+    >
       <v-card-text class="py-3">
-        <v-row dense align="center">
-          <v-col cols="12" sm="6" md="4">
+        <v-row
+          dense
+          align="center"
+        >
+          <v-col
+            cols="12"
+            sm="6"
+            md="4"
+          >
             <v-text-field
               v-model="search"
               placeholder="Szukaj (nazwa, e-mail, NIP)…"
@@ -27,8 +46,15 @@
               @update:model-value="onSearch"
             />
           </v-col>
-          <v-col cols="auto" class="ms-auto">
-            <v-chip :color="total > 0 ? 'success' : 'default'" variant="tonal" size="small">
+          <v-col
+            cols="auto"
+            class="ms-auto"
+          >
+            <v-chip
+              :color="total > 0 ? 'success' : 'default'"
+              variant="tonal"
+              size="small"
+            >
               {{ total }} rekordów
             </v-chip>
           </v-col>
@@ -37,7 +63,10 @@
     </v-card>
 
     <!-- Table -->
-    <v-card color="#161c2d" border>
+    <v-card
+      color="#161c2d"
+      border
+    >
       <v-data-table
         :headers="headers"
         :items="items"
@@ -56,7 +85,9 @@
             variant="tonal"
             size="x-small"
             label
-          >{{ statusLabel(item.status) }}</v-chip>
+          >
+            {{ statusLabel(item.status) }}
+          </v-chip>
         </template>
 
         <!-- Assigned -->
@@ -71,11 +102,27 @@
 
         <!-- Actions -->
         <template #item.actions="{ item }">
-          <v-btn icon size="x-small" variant="text" color="info" @click="openEdit(item)">
-            <v-icon size="16">mdi-pencil-outline</v-icon>
+          <v-btn
+            icon
+            size="x-small"
+            variant="text"
+            color="info"
+            @click="openEdit(item)"
+          >
+            <v-icon size="16">
+              mdi-pencil-outline
+            </v-icon>
           </v-btn>
-          <v-btn icon size="x-small" variant="text" color="error" @click="confirmDelete(item)">
-            <v-icon size="16">mdi-trash-can-outline</v-icon>
+          <v-btn
+            icon
+            size="x-small"
+            variant="text"
+            color="error"
+            @click="confirmDelete(item)"
+          >
+            <v-icon size="16">
+              mdi-trash-can-outline
+            </v-icon>
           </v-btn>
         </template>
       </v-data-table>
@@ -90,10 +137,22 @@
     />
 
     <!-- Delete confirm -->
-    <v-dialog v-model="deleteDialog" max-width="400">
-      <v-card color="#161c2d" border>
+    <v-dialog
+      v-model="deleteDialog"
+      max-width="400"
+    >
+      <v-card
+        color="#161c2d"
+        border
+      >
         <v-card-title class="dialog-title">
-          <v-icon start color="error" size="20">mdi-trash-can-outline</v-icon>
+          <v-icon
+            start
+            color="error"
+            size="20"
+          >
+            mdi-trash-can-outline
+          </v-icon>
           Usuń kontrahenta
         </v-card-title>
         <v-card-text class="text-body-2">
@@ -101,8 +160,19 @@
         </v-card-text>
         <v-card-actions class="pa-4">
           <v-spacer />
-          <v-btn variant="text" @click="deleteDialog = false">Anuluj</v-btn>
-          <v-btn color="error" :loading="deleting" @click="doDelete">Usuń</v-btn>
+          <v-btn
+            variant="text"
+            @click="deleteDialog = false"
+          >
+            Anuluj
+          </v-btn>
+          <v-btn
+            color="error"
+            :loading="deleting"
+            @click="doDelete"
+          >
+            Usuń
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -181,10 +251,10 @@ function confirmDelete(c: Customer) { deleteItem.value = c; deleteDialog.value =
 async function onSaved(data: Record<string, unknown>) {
   try {
     if (editItem.value) {
-      await customersApi.update(editItem.value.id, data as any)
+      await customersApi.update(editItem.value.id, data as Partial<Customer>)
       notify('Kontrahent zaktualizowany.')
     } else {
-      await customersApi.create(data as any)
+      await customersApi.create(data as Partial<Customer>)
       notify('Kontrahent dodany.')
     }
     load()

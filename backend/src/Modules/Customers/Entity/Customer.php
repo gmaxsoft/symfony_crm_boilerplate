@@ -19,6 +19,7 @@ class Customer
     #[ORM\Column]
     private ?int $id = null;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     #[ORM\Column(length: 255)]
     private string $name;
 
@@ -72,41 +73,150 @@ class Customer
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getName(): string { return $this->name; }
-    public function setName(string $name): static { $this->name = $name; return $this; }
+    public function getName(): string
+    {
+        return $this->name;
+    }
 
-    public function getEmail(): ?string { return $this->email; }
-    public function setEmail(?string $email): static { $this->email = $email; return $this; }
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
-    public function getPhone(): ?string { return $this->phone; }
-    public function setPhone(?string $phone): static { $this->phone = $phone; return $this; }
+        return $this;
+    }
 
-    public function getNip(): ?string { return $this->nip; }
-    public function setNip(?string $nip): static { $this->nip = $nip; return $this; }
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
 
-    public function getAddress(): ?string { return $this->address; }
-    public function setAddress(?string $address): static { $this->address = $address; return $this; }
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
 
-    public function getCity(): ?string { return $this->city; }
-    public function setCity(?string $city): static { $this->city = $city; return $this; }
+        return $this;
+    }
 
-    public function getZipCode(): ?string { return $this->zipCode; }
-    public function setZipCode(?string $zipCode): static { $this->zipCode = $zipCode; return $this; }
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
 
-    public function getCountry(): ?string { return $this->country; }
-    public function setCountry(?string $country): static { $this->country = $country; return $this; }
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
 
-    public function getNotes(): ?string { return $this->notes; }
-    public function setNotes(?string $notes): static { $this->notes = $notes; return $this; }
+        return $this;
+    }
 
-    public function getStatus(): string { return $this->status; }
-    public function setStatus(string $status): static { $this->status = $status; return $this; }
+    public function getNip(): ?string
+    {
+        return $this->nip;
+    }
 
-    public function getAssignedTo(): ?User { return $this->assignedTo; }
-    public function setAssignedTo(?User $assignedTo): static { $this->assignedTo = $assignedTo; return $this; }
+    public function setNip(?string $nip): static
+    {
+        $this->nip = $nip;
 
-    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
-    public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zipCode;
+    }
+
+    public function setZipCode(?string $zipCode): static
+    {
+        $this->zipCode = $zipCode;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): static
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getAssignedTo(): ?User
+    {
+        return $this->assignedTo;
+    }
+
+    public function setAssignedTo(?User $assignedTo): static
+    {
+        $this->assignedTo = $assignedTo;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
 }

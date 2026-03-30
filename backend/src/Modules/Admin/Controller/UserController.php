@@ -13,21 +13,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/admin/users', name: 'admin_users_')]
 final class UserController extends AbstractApiController
 {
-    public function __construct(private readonly UserService $userService) {}
-
-    private function serialize(\App\Modules\Admin\Entity\User $u): array
+    public function __construct(private readonly UserService $userService)
     {
-        return [
-            'id'        => $u->getId(),
-            'email'     => $u->getEmail(),
-            'firstName' => $u->getFirstName(),
-            'lastName'  => $u->getLastName(),
-            'fullName'  => $u->getFullName(),
-            'role'      => ['id' => $u->getRole()->getId(), 'name' => $u->getRole()->getName()],
-            'isActive'  => $u->isActive(),
-            'createdAt' => $u->getCreatedAt()->format(\DateTimeInterface::ATOM),
-            'updatedAt' => $u->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
-        ];
     }
 
     /** GET /api/admin/users */
@@ -50,18 +37,18 @@ final class UserController extends AbstractApiController
     {
         $d = $request->toArray();
 
-        $missing = array_filter(['email', 'password', 'firstName', 'lastName', 'roleId'], fn ($k) => empty($d[$k]));
+        $missing = array_filter(['email', 'password', 'firstName', 'lastName', 'roleId'], static fn ($k) => empty($d[$k]));
         if ($missing !== []) {
-            return $this->error(sprintf('Brakujące pola: %s.', implode(', ', $missing)), 422);
+            return $this->error(\sprintf('Brakujące pola: %s.', implode(', ', $missing)), 422);
         }
 
         $user = $this->userService->create(
-            email:         $d['email'],
+            email: $d['email'],
             plainPassword: $d['password'],
-            firstName:     $d['firstName'],
-            lastName:      $d['lastName'],
-            roleId:        (int) $d['roleId'],
-            isActive:      (bool) ($d['isActive'] ?? true),
+            firstName: $d['firstName'],
+            lastName: $d['lastName'],
+            roleId: (int) $d['roleId'],
+            isActive: (bool) ($d['isActive'] ?? true),
         );
 
         return $this->success($this->serialize($user), 201);
@@ -73,13 +60,14 @@ final class UserController extends AbstractApiController
     {
         $d = $request->toArray();
         $user = $this->userService->update(
-            id:            $id,
-            firstName:     $d['firstName'] ?? '',
-            lastName:      $d['lastName'] ?? '',
-            roleId:        (int) ($d['roleId'] ?? 0),
-            isActive:      (bool) ($d['isActive'] ?? true),
+            id: $id,
+            firstName: $d['firstName'] ?? '',
+            lastName: $d['lastName'] ?? '',
+            roleId: (int) ($d['roleId'] ?? 0),
+            isActive: (bool) ($d['isActive'] ?? true),
             plainPassword: $d['password'] ?? null,
         );
+
         return $this->success($this->serialize($user));
     }
 
@@ -88,6 +76,22 @@ final class UserController extends AbstractApiController
     public function delete(int $id): JsonResponse
     {
         $this->userService->delete($id);
+
         return $this->success(null, 204);
+    }
+
+    private function serialize(\App\Modules\Admin\Entity\User $u): array
+    {
+        return [
+            'id' => $u->getId(),
+            'email' => $u->getEmail(),
+            'firstName' => $u->getFirstName(),
+            'lastName' => $u->getLastName(),
+            'fullName' => $u->getFullName(),
+            'role' => ['id' => $u->getRole()->getId(), 'name' => $u->getRole()->getName()],
+            'isActive' => $u->isActive(),
+            'createdAt' => $u->getCreatedAt()->format(\DateTimeInterface::ATOM),
+            'updatedAt' => $u->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
+        ];
     }
 }

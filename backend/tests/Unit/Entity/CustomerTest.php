@@ -61,20 +61,20 @@ final class CustomerTest extends TestCase
             ->setCountry('Polska')
             ->setNotes('Ważny klient');
 
-        self::assertSame('Firma XYZ',         $c->getName());
-        self::assertSame('kontakt@firma.pl',   $c->getEmail());
-        self::assertSame('+48 123 456 789',    $c->getPhone());
-        self::assertSame('1234567890',         $c->getNip());
-        self::assertSame('ul. Testowa 1',      $c->getAddress());
-        self::assertSame('Warszawa',           $c->getCity());
-        self::assertSame('00-001',             $c->getZipCode());
-        self::assertSame('Polska',             $c->getCountry());
-        self::assertSame('Ważny klient',       $c->getNotes());
+        self::assertSame('Firma XYZ', $c->getName());
+        self::assertSame('kontakt@firma.pl', $c->getEmail());
+        self::assertSame('+48 123 456 789', $c->getPhone());
+        self::assertSame('1234567890', $c->getNip());
+        self::assertSame('ul. Testowa 1', $c->getAddress());
+        self::assertSame('Warszawa', $c->getCity());
+        self::assertSame('00-001', $c->getZipCode());
+        self::assertSame('Polska', $c->getCountry());
+        self::assertSame('Ważny klient', $c->getNotes());
     }
 
     public function testSetAndGetAssignedTo(): void
     {
-        $user     = (new User())->setFirstName('Jan')->setLastName('Kowalski')
+        $user = (new User())->setFirstName('Jan')->setLastName('Kowalski')
                                 ->setEmail('jan@venom.pl')
                                 ->setRole((new Role())->setName(Role::SALESPERSON));
         $customer = (new Customer())->setAssignedTo($user);
@@ -83,7 +83,7 @@ final class CustomerTest extends TestCase
 
     public function testSetAssignedToNull(): void
     {
-        $user     = (new User())->setFirstName('X')->setLastName('Y')
+        $user = (new User())->setFirstName('X')->setLastName('Y')
                                 ->setEmail('x@y.pl')
                                 ->setRole((new Role())->setName(Role::SALESPERSON));
         $customer = (new Customer())->setAssignedTo($user)->setAssignedTo(null);
@@ -93,8 +93,8 @@ final class CustomerTest extends TestCase
     public function testCreatedAtIsSetOnConstruct(): void
     {
         $before = new \DateTimeImmutable();
-        $c      = new Customer();
-        $after  = new \DateTimeImmutable();
+        $c = new Customer();
+        $after = new \DateTimeImmutable();
 
         self::assertGreaterThanOrEqual($before, $c->getCreatedAt());
         self::assertLessThanOrEqual($after, $c->getCreatedAt());

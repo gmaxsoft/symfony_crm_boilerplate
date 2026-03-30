@@ -2,41 +2,91 @@
   <div>
     <div class="d-flex align-center justify-space-between mb-5">
       <div>
-        <h2 class="page-heading">Uprawnienia</h2>
-        <p class="page-sub">Zarządzanie rolami i poziomami dostępu</p>
+        <h2 class="page-heading">
+          Uprawnienia
+        </h2>
+        <p class="page-sub">
+          Zarządzanie rolami i poziomami dostępu
+        </p>
       </div>
-      <v-btn color="success" prepend-icon="mdi-plus" @click="openCreate">
+      <v-btn
+        color="success"
+        prepend-icon="mdi-plus"
+        @click="openCreate"
+      >
         Nowa rola
       </v-btn>
     </div>
 
     <!-- Role cards -->
     <v-row v-if="!loading">
-      <v-col v-for="role in roles" :key="role.id" cols="12" sm="6" lg="4">
-        <v-card color="#161c2d" border class="role-card">
+      <v-col
+        v-for="role in roles"
+        :key="role.id"
+        cols="12"
+        sm="6"
+        lg="4"
+      >
+        <v-card
+          color="#161c2d"
+          border
+          class="role-card"
+        >
           <v-card-text>
             <div class="d-flex align-center justify-space-between mb-3">
               <div class="role-icon-wrap">
-                <v-icon :color="roleColor(role.name)" size="20">{{ roleIcon(role.name) }}</v-icon>
+                <v-icon
+                  :color="roleColor(role.name)"
+                  size="20"
+                >
+                  {{ roleIcon(role.name) }}
+                </v-icon>
               </div>
               <div class="d-flex gap-1">
-                <v-btn icon size="x-small" variant="text" color="info" @click="openEdit(role)">
-                  <v-icon size="16">mdi-pencil-outline</v-icon>
+                <v-btn
+                  icon
+                  size="x-small"
+                  variant="text"
+                  color="info"
+                  @click="openEdit(role)"
+                >
+                  <v-icon size="16">
+                    mdi-pencil-outline
+                  </v-icon>
                 </v-btn>
-                <v-btn icon size="x-small" variant="text" color="error" @click="confirmDelete(role)">
-                  <v-icon size="16">mdi-trash-can-outline</v-icon>
+                <v-btn
+                  icon
+                  size="x-small"
+                  variant="text"
+                  color="error"
+                  @click="confirmDelete(role)"
+                >
+                  <v-icon size="16">
+                    mdi-trash-can-outline
+                  </v-icon>
                 </v-btn>
               </div>
             </div>
-            <div class="role-name">{{ role.name }}</div>
-            <div class="role-desc">{{ role.description ?? 'Brak opisu' }}</div>
+            <div class="role-name">
+              {{ role.name }}
+            </div>
+            <div class="role-desc">
+              {{ role.description ?? 'Brak opisu' }}
+            </div>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
 
-    <div v-else class="d-flex justify-center py-12">
-      <v-progress-circular indeterminate color="success" size="40" />
+    <div
+      v-else
+      class="d-flex justify-center py-12"
+    >
+      <v-progress-circular
+        indeterminate
+        color="success"
+        size="40"
+      />
     </div>
 
     <RoleDialog
@@ -46,10 +96,22 @@
     />
 
     <!-- Delete confirm -->
-    <v-dialog v-model="deleteDialog" max-width="400">
-      <v-card color="#161c2d" border>
+    <v-dialog
+      v-model="deleteDialog"
+      max-width="400"
+    >
+      <v-card
+        color="#161c2d"
+        border
+      >
         <v-card-title class="dialog-title">
-          <v-icon start color="error" size="20">mdi-trash-can-outline</v-icon>Usuń rolę
+          <v-icon
+            start
+            color="error"
+            size="20"
+          >
+            mdi-trash-can-outline
+          </v-icon>Usuń rolę
         </v-card-title>
         <v-card-text class="text-body-2">
           Czy na pewno chcesz usunąć rolę <strong>{{ deleteRole?.name }}</strong>?
@@ -57,8 +119,19 @@
         </v-card-text>
         <v-card-actions class="pa-4">
           <v-spacer />
-          <v-btn variant="text" @click="deleteDialog = false">Anuluj</v-btn>
-          <v-btn color="error" :loading="deleting" @click="doDelete">Usuń</v-btn>
+          <v-btn
+            variant="text"
+            @click="deleteDialog = false"
+          >
+            Anuluj
+          </v-btn>
+          <v-btn
+            color="error"
+            :loading="deleting"
+            @click="doDelete"
+          >
+            Usuń
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -126,8 +199,9 @@ async function doDelete() {
     notify('Rola usunięta.', 'warning')
     deleteDialog.value = false
     load()
-  } catch (e: any) {
-    notify(e.response?.data?.message ?? 'Błąd usuwania.', 'error')
+  } catch (e: unknown) {
+    const err = e as { response?: { data?: { message?: string } } }
+    notify(err.response?.data?.message ?? 'Błąd usuwania.', 'error')
   } finally { deleting.value = false }
 }
 

@@ -43,7 +43,7 @@ class CustomerRepository extends ServiceEntityRepository
 
         return [
             'items' => iterator_to_array($paginator),
-            'total' => count($paginator),
+            'total' => \count($paginator),
         ];
     }
 

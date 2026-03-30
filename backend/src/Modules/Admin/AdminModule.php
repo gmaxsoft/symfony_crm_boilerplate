@@ -8,6 +8,15 @@ use App\Shared\Contract\ModuleInterface;
 
 final class AdminModule implements ModuleInterface
 {
-    public static function getName(): string { return 'admin'; }
-    public static function getDescription(): string { return 'Zarzadzanie uzytkownikami systemu CRM.'; }
+    #[\Override]
+    public static function getName(): string
+    {
+        return 'admin';
+    }
+
+    #[\Override]
+    public static function getDescription(): string
+    {
+        return 'Zarzadzanie uzytkownikami systemu CRM.';
+    }
 }

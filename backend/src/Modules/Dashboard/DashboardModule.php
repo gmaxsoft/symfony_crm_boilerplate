@@ -8,6 +8,15 @@ use App\Shared\Contract\ModuleInterface;
 
 final class DashboardModule implements ModuleInterface
 {
-    public static function getName(): string { return 'dashboard'; }
-    public static function getDescription(): string { return 'Pulpit glowny ze statystykami systemu CRM.'; }
+    #[\Override]
+    public static function getName(): string
+    {
+        return 'dashboard';
+    }
+
+    #[\Override]
+    public static function getDescription(): string
+    {
+        return 'Pulpit glowny ze statystykami systemu CRM.';
+    }
 }

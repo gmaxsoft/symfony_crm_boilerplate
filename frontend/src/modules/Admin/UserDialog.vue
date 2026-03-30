@@ -1,19 +1,46 @@
 <template>
-  <v-dialog :model-value="modelValue" max-width="520" @update:model-value="$emit('update:modelValue', $event)">
-    <v-card color="#161c2d" border>
+  <v-dialog
+    :model-value="modelValue"
+    max-width="520"
+    @update:model-value="$emit('update:modelValue', $event)"
+  >
+    <v-card
+      color="#161c2d"
+      border
+    >
       <v-card-title class="dialog-title">
-        <v-icon start color="success" size="20">mdi-account-cog-outline</v-icon>
+        <v-icon
+          start
+          color="success"
+          size="20"
+        >
+          mdi-account-cog-outline
+        </v-icon>
         {{ user ? 'Edytuj użytkownika' : 'Nowy użytkownik' }}
       </v-card-title>
       <v-divider color="rgba(255,255,255,0.07)" />
 
       <v-card-text class="pt-5">
         <v-row dense>
-          <v-col cols="12" sm="6">
-            <v-text-field v-model="form.firstName" label="Imię *" color="success" />
+          <v-col
+            cols="12"
+            sm="6"
+          >
+            <v-text-field
+              v-model="form.firstName"
+              label="Imię *"
+              color="success"
+            />
           </v-col>
-          <v-col cols="12" sm="6">
-            <v-text-field v-model="form.lastName" label="Nazwisko *" color="success" />
+          <v-col
+            cols="12"
+            sm="6"
+          >
+            <v-text-field
+              v-model="form.lastName"
+              label="Nazwisko *"
+              color="success"
+            />
           </v-col>
           <v-col cols="12">
             <v-text-field
@@ -34,7 +61,10 @@
               @click:append-inner="showPwd = !showPwd"
             />
           </v-col>
-          <v-col cols="12" sm="8">
+          <v-col
+            cols="12"
+            sm="8"
+          >
             <v-select
               v-model="form.roleId"
               label="Rola *"
@@ -44,7 +74,11 @@
               color="success"
             />
           </v-col>
-          <v-col cols="12" sm="4" class="d-flex align-center">
+          <v-col
+            cols="12"
+            sm="4"
+            class="d-flex align-center"
+          >
             <v-switch
               v-model="form.isActive"
               label="Aktywny"
@@ -59,9 +93,19 @@
       <v-divider color="rgba(255,255,255,0.07)" />
       <v-card-actions class="pa-4">
         <v-spacer />
-        <v-btn variant="text" @click="$emit('update:modelValue', false)">Anuluj</v-btn>
-        <v-btn color="success" @click="save">
-          <v-icon start>mdi-content-save-outline</v-icon>Zapisz
+        <v-btn
+          variant="text"
+          @click="$emit('update:modelValue', false)"
+        >
+          Anuluj
+        </v-btn>
+        <v-btn
+          color="success"
+          @click="save"
+        >
+          <v-icon start>
+            mdi-content-save-outline
+          </v-icon>Zapisz
         </v-btn>
       </v-card-actions>
     </v-card>

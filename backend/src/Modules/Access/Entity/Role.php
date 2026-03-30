@@ -13,9 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'roles')]
 class Role
 {
-    public const ADMINISTRATOR          = 'Administrator';
-    public const EMPLOYEE_ADMIN         = 'Pracownik administracyjny';
-    public const SALESPERSON            = 'Handlowiec';
+    public const ADMINISTRATOR = 'Administrator';
+    public const EMPLOYEE_ADMIN = 'Pracownik administracyjny';
+    public const SALESPERSON = 'Handlowiec';
 
     public const ALL_ROLES = [
         self::ADMINISTRATOR,
@@ -28,6 +28,7 @@ class Role
     #[ORM\Column]
     private ?int $id = null;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     #[ORM\Column(length: 100, unique: true)]
     private string $name;
 
@@ -55,6 +56,7 @@ class Role
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -66,6 +68,7 @@ class Role
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 

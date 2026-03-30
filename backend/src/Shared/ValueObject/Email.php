@@ -18,11 +18,16 @@ final class Email
     {
         $normalized = strtolower(trim($value));
 
-        if (!filter_var($normalized, FILTER_VALIDATE_EMAIL)) {
-            throw new DomainException(sprintf('"%s" is not a valid email address.', $value));
+        if (!filter_var($normalized, \FILTER_VALIDATE_EMAIL)) {
+            throw new DomainException(\sprintf('"%s" is not a valid email address.', $value));
         }
 
         $this->value = $normalized;
+    }
+
+    public function __toString(): string
+    {
+        return $this->value;
     }
 
     public function getValue(): string
@@ -33,10 +38,5 @@ final class Email
     public function equals(self $other): bool
     {
         return $this->value === $other->value;
-    }
-
-    public function __toString(): string
-    {
-        return $this->value;
     }
 }

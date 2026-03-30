@@ -24,14 +24,15 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 final class DatabaseSeedCommand extends Command
 {
     public function __construct(
-        private readonly EntityManagerInterface      $em,
-        private readonly RoleRepository              $roleRepository,
-        private readonly UserRepository              $userRepository,
+        private readonly EntityManagerInterface $em,
+        private readonly RoleRepository $roleRepository,
+        private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $hasher,
     ) {
         parent::__construct();
     }
 
+    #[\Override]
     protected function configure(): void
     {
         $this
@@ -57,6 +58,7 @@ final class DatabaseSeedCommand extends Command
             );
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -75,15 +77,15 @@ final class DatabaseSeedCommand extends Command
 
         $rolesData = [
             [
-                'name'        => Role::ADMINISTRATOR,
+                'name' => Role::ADMINISTRATOR,
                 'description' => 'Pełny dostęp do wszystkich funkcji systemu CRM.',
             ],
             [
-                'name'        => Role::EMPLOYEE_ADMIN,
+                'name' => Role::EMPLOYEE_ADMIN,
                 'description' => 'Dostęp do zarządzania kontrahentami i raportów.',
             ],
             [
-                'name'        => Role::SALESPERSON,
+                'name' => Role::SALESPERSON,
                 'description' => 'Dostęp do własnych kontrahentów i szans sprzedaży.',
             ],
         ];
@@ -94,7 +96,7 @@ final class DatabaseSeedCommand extends Command
 
             if ($existing) {
                 $roleMap[$data['name']] = $existing;
-                $io->text(sprintf('  ✓ Rola "%s" już istnieje — pomijam.', $data['name']));
+                $io->text(\sprintf('  ✓ Rola "%s" już istnieje — pomijam.', $data['name']));
                 continue;
             }
 
@@ -106,22 +108,26 @@ final class DatabaseSeedCommand extends Command
             $this->em->flush();
 
             $roleMap[$data['name']] = $role;
-            $io->text(sprintf('  + Utworzono rolę "%s".', $data['name']));
+            $io->text(\sprintf('  + Utworzono rolę "%s".', $data['name']));
         }
 
         // ── 2. Konto administratora ───────────────────────────────────
         $io->section('2. Konto administratora');
 
-        $adminEmail    = $input->getOption('admin-email');
-        $adminPassword = $input->getOption('admin-password');
+        $adminEmail = $input->getOption('admin-email') ?? 'admin@venom.pl';
+        $adminPassword = $input->getOption('admin-password') ?? 'Admin123!';
 
         $existing = $this->userRepository->findByEmail($adminEmail);
 
         if ($existing) {
-            $io->text(sprintf('  ✓ Użytkownik "%s" już istnieje — pomijam.', $adminEmail));
+            $io->text(\sprintf('  ✓ Użytkownik "%s" już istnieje — pomijam.', $adminEmail));
         } else {
-            /** @var Role $adminRole */
-            $adminRole = $roleMap[Role::ADMINISTRATOR];
+            $adminRole = $roleMap[Role::ADMINISTRATOR] ?? null;
+            if (!$adminRole instanceof Role) {
+                $io->error('Nie znaleziono roli Administrator — seed nie powiódł się.');
+
+                return Command::FAILURE;
+            }
 
             $admin = (new User())
                 ->setEmail($adminEmail)
@@ -135,7 +141,7 @@ final class DatabaseSeedCommand extends Command
             $this->em->persist($admin);
             $this->em->flush();
 
-            $io->text(sprintf('  + Utworzono konto administratora: %s', $adminEmail));
+            $io->text(\sprintf('  + Utworzono konto administratora: %s', $adminEmail));
         }
 
         // ── 3. Podsumowanie ───────────────────────────────────────────
@@ -148,7 +154,7 @@ final class DatabaseSeedCommand extends Command
                 ['E-mail administratora',    $adminEmail],
                 ['Hasło administratora',     $adminPassword],
                 ['Role w systemie',          implode(', ', array_keys($roleMap))],
-            ]
+            ],
         );
 
         $io->note([

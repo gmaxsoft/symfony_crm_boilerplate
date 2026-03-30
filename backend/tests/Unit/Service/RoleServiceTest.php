@@ -7,9 +7,7 @@ namespace App\Tests\Unit\Service;
 use App\Modules\Access\Entity\Role;
 use App\Modules\Access\Repository\RoleRepository;
 use App\Modules\Access\Service\RoleService;
-use App\Modules\Admin\Entity\User;
 use App\Shared\Exception\NotFoundException;
-use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -18,10 +16,11 @@ final class RoleServiceTest extends TestCase
     private RoleRepository&MockObject $roleRepo;
     private RoleService $service;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->roleRepo = $this->createMock(RoleRepository::class);
-        $this->service  = new RoleService($this->roleRepo);
+        $this->service = new RoleService($this->roleRepo);
     }
 
     // ── findAll ───────────────────────────────────────────────────────────────
@@ -116,7 +115,6 @@ final class RoleServiceTest extends TestCase
 
         $reflection = new \ReflectionClass($role);
         $prop = $reflection->getProperty('users');
-        $prop->setAccessible(true);
         $prop->setValue($role, $mockCollection);
 
         $this->roleRepo->method('find')->willReturn($role);

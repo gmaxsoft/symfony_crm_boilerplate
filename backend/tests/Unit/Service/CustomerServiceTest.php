@@ -17,22 +17,15 @@ use PHPUnit\Framework\TestCase;
 final class CustomerServiceTest extends TestCase
 {
     private CustomerRepository&MockObject $customerRepo;
-    private UserRepository&MockObject     $userRepo;
-    private CustomerService               $service;
+    private UserRepository&MockObject $userRepo;
+    private CustomerService $service;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->customerRepo = $this->createMock(CustomerRepository::class);
-        $this->userRepo     = $this->createMock(UserRepository::class);
-        $this->service      = new CustomerService($this->customerRepo, $this->userRepo);
-    }
-
-    private function makeUser(): User
-    {
-        return (new User())
-            ->setFirstName('Jan')->setLastName('Kowalski')
-            ->setEmail('jan@venom.pl')
-            ->setRole((new Role())->setName(Role::SALESPERSON));
+        $this->userRepo = $this->createMock(UserRepository::class);
+        $this->service = new CustomerService($this->customerRepo, $this->userRepo);
     }
 
     // ── paginate ──────────────────────────────────────────────────────────────
@@ -95,7 +88,7 @@ final class CustomerServiceTest extends TestCase
         $this->customerRepo->method('save');
 
         $customer = $this->service->create([
-            'name'         => 'Firma XYZ',
+            'name' => 'Firma XYZ',
             'assignedToId' => 3,
         ]);
 
@@ -115,7 +108,7 @@ final class CustomerServiceTest extends TestCase
         $this->customerRepo->method('save');
 
         $customer = $this->service->create([
-            'name'         => 'Firma',
+            'name' => 'Firma',
             'assignedToId' => null,
         ]);
 
@@ -161,5 +154,13 @@ final class CustomerServiceTest extends TestCase
 
         $this->expectException(NotFoundException::class);
         $this->service->delete(99);
+    }
+
+    private function makeUser(): User
+    {
+        return (new User())
+            ->setFirstName('Jan')->setLastName('Kowalski')
+            ->setEmail('jan@venom.pl')
+            ->setRole((new Role())->setName(Role::SALESPERSON));
     }
 }

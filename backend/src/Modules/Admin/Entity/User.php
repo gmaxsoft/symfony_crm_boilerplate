@@ -20,21 +20,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     #[ORM\Column(length: 180, unique: true)]
     private string $email;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     #[ORM\Column]
     private string $password;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     #[ORM\Column(length: 100)]
     private string $firstName;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     #[ORM\Column(length: 100)]
     private string $lastName;
 
     #[ORM\Column]
     private bool $isActive = true;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     #[ORM\ManyToOne(targetEntity: Role::class, inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
     private Role $role;
@@ -69,17 +74,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-        return $this;
-    }
 
-    public function getPassword(): string
-    {
-        return $this->password;
+        return $this;
     }
 
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
         return $this;
     }
 
@@ -91,6 +93,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFirstName(string $firstName): static
     {
         $this->firstName = $firstName;
+
         return $this;
     }
 
@@ -102,6 +105,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastName(string $lastName): static
     {
         $this->lastName = $lastName;
+
         return $this;
     }
 
@@ -118,6 +122,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
         return $this;
     }
 
@@ -129,6 +134,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRole(Role $role): static
     {
         $this->role = $role;
+
         return $this;
     }
 
@@ -144,21 +150,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     // --- UserInterface ---
 
+    #[\Override]
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    #[\Override]
     public function getUserIdentifier(): string
     {
+        \assert($this->email !== '', 'User email must not be empty');
+
         return $this->email;
     }
 
     /**
      * Zwraca role w formacie Symfony Security (ROLE_*).
      * Nazwa roli jest normalizowana: spacje → podkreślniki, małe litery → duże.
+     *
+     * @return list<string>
      */
+    #[\Override]
     public function getRoles(): array
     {
         $normalized = strtoupper(str_replace(' ', '_', $this->role->getName()));
+
         return ['ROLE_USER', 'ROLE_' . $normalized];
     }
 
+    #[\Override]
     public function eraseCredentials(): void
     {
     }

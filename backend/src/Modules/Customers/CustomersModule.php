@@ -8,6 +8,15 @@ use App\Shared\Contract\ModuleInterface;
 
 final class CustomersModule implements ModuleInterface
 {
-    public static function getName(): string { return 'customers'; }
-    public static function getDescription(): string { return 'Zarzadzanie kontrahentami CRM.'; }
+    #[\Override]
+    public static function getName(): string
+    {
+        return 'customers';
+    }
+
+    #[\Override]
+    public static function getDescription(): string
+    {
+        return 'Zarzadzanie kontrahentami CRM.';
+    }
 }
