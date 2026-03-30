@@ -8,6 +8,6 @@
 
 <style scoped>
 .auth-bg {
-  background: radial-gradient(ellipse at 30% 50%, rgba(74,222,128,0.06) 0%, #0f1117 60%) !important;
+  background: #0f1117 !important;
 }
 </style>

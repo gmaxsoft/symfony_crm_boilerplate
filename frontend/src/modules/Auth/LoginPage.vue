@@ -1,9 +1,6 @@
 <template>
   <div class="login-wrap">
-    <!-- glow blob -->
-    <div class="glow-blob" />
-
-    <v-card class="login-card" color="#161c2d">
+    <v-card class="login-card" color="#161c2d" rounded="0">
       <!-- Header -->
       <div class="login-header">
         <div class="logo-ring">
@@ -20,7 +17,7 @@
           type="error"
           variant="tonal"
           density="compact"
-          rounded="lg"
+          rounded="0"
           class="mb-5"
           closable
           @click:close="error = ''"
@@ -35,6 +32,7 @@
             prepend-inner-icon="mdi-email-outline"
             color="success"
             class="mb-3"
+            rounded="0"
             autocomplete="email"
             :disabled="loading"
           />
@@ -48,6 +46,7 @@
             :append-inner-icon="showPwd ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
             color="success"
             class="mb-6"
+            rounded="0"
             autocomplete="current-password"
             :disabled="loading"
             @click:append-inner="showPwd = !showPwd"
@@ -58,6 +57,7 @@
             color="success"
             size="large"
             block
+            rounded="0"
             :loading="loading"
           >
             <v-icon start>mdi-login</v-icon>
@@ -118,17 +118,6 @@ async function submit() {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  position: relative;
-  overflow: hidden;
-}
-
-.glow-blob {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(74,222,128,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(167,139,250,0.05) 0%, transparent 60%);
-  pointer-events: none;
 }
 
 .login-card {
@@ -143,13 +132,12 @@ async function submit() {
   flex-direction: column;
   align-items: center;
   padding: 40px 32px 28px;
-  background: linear-gradient(180deg, rgba(6,79,60,0.5) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(6, 79, 60, 0.4) 0%, transparent 100%);
 }
 
 .logo-ring {
   width: 56px;
   height: 56px;
-  border-radius: 16px;
   background: rgba(74, 222, 128, 0.12);
   border: 1px solid rgba(74, 222, 128, 0.25);
   display: flex;
