@@ -1,11 +1,24 @@
 # yaml-language-server: $schema=../vendor/symfony/routing/Loader/schema/routing.schema.json
 
-# This file is the entry point to configure the routes of your app.
-# Methods with the #[Route] attribute are automatically imported.
-# See also https://symfony.com/doc/current/routing.html
+# Routing dla architektury Modular Monolith
+# Każdy moduł skanowany jest osobno — trasy definiowane przez atrybuty PHP #[Route]
 
-# To list all registered routes, run the following command:
-#   bin/console debug:router
+modules_user:
+    resource: '../src/Modules/User/Controller/'
+    type: attribute
 
-controllers:
-    resource: routing.controllers
+modules_contact:
+    resource: '../src/Modules/Contact/Controller/'
+    type: attribute
+
+modules_company:
+    resource: '../src/Modules/Company/Controller/'
+    type: attribute
+
+modules_deal:
+    resource: '../src/Modules/Deal/Controller/'
+    type: attribute
+
+modules_dashboard:
+    resource: '../src/Modules/Dashboard/Controller/'
+    type: attribute
