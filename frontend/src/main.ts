@@ -32,11 +32,16 @@ const vuetify = createVuetify({
     },
   },
   defaults: {
-    VBtn:  { rounded: 'lg', elevation: 0 },
-    VCard: { rounded: 'xl', elevation: 0 },
-    VTextField: { rounded: 'lg', variant: 'outlined', density: 'comfortable' },
-    VSelect:    { rounded: 'lg', variant: 'outlined', density: 'comfortable' },
-    VTextarea:  { rounded: 'lg', variant: 'outlined', density: 'comfortable' },
+    VBtn:       { rounded: '0', elevation: 0 },
+    VCard:      { rounded: '0', elevation: 0 },
+    VTextField: { rounded: '0', variant: 'outlined', density: 'comfortable' },
+    VSelect:    { rounded: '0', variant: 'outlined', density: 'comfortable' },
+    VTextarea:  { rounded: '0', variant: 'outlined', density: 'comfortable' },
+    VChip:      { rounded: '0' },
+    VAlert:     { rounded: '0' },
+    VSnackbar:  { rounded: '0' },
+    VListItem:  { rounded: '0' },
+    VDialog:    { rounded: '0' },
   },
 })
 

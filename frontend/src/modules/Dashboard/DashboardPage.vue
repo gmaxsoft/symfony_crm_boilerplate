@@ -94,7 +94,6 @@
                     <v-progress-linear
                       :model-value="item.pct"
                       :color="item.color"
-                      rounded
                       height="4"
                       bg-color="rgba(255,255,255,0.06)"
                       class="mt-1"
@@ -231,7 +230,6 @@ onMounted(async () => {
 .stat-card { border: 1px solid rgba(255,255,255,0.07) !important; }
 .stat-icon {
   width: 38px; height: 38px;
-  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
 }
 .stat-value {
@@ -249,7 +247,6 @@ onMounted(async () => {
   font-size: 0.7rem;
   font-weight: 600;
   padding: 2px 7px;
-  border-radius: 20px;
 }
 .trend--up      { background: rgba(74,222,128,0.12); color: #4ade80; }
 .trend--neutral { background: rgba(148,163,184,0.12); color: #94a3b8; }
@@ -272,7 +269,6 @@ onMounted(async () => {
 .quick-stat { margin-bottom: 16px; }
 .quick-icon {
   width: 30px; height: 30px;
-  border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }

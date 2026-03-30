@@ -33,8 +33,7 @@
                 :prepend-icon="item.icon"
                 :title="rail ? undefined : item.title"
                 exact
-                rounded="lg"
-                active-color="success"
+                  active-color="success"
                 class="nav-item"
               />
             </template>
@@ -49,7 +48,6 @@
           <v-list-item
             :prepend-icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
             :title="rail ? undefined : 'Zwiń menu'"
-            rounded="lg"
             class="nav-item nav-item--collapse"
             @click="rail = !rail"
           />
@@ -116,7 +114,6 @@
       :color="snack.color"
       location="bottom right"
       :timeout="3000"
-      rounded="lg"
     >
       {{ snack.text }}
     </v-snackbar>
@@ -180,7 +177,6 @@ function handleLogout() {
   width: 36px;
   height: 36px;
   background: rgba(74, 222, 128, 0.15);
-  border-radius: 8px;
   flex-shrink: 0;
 }
 

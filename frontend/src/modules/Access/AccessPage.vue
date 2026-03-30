@@ -143,7 +143,7 @@ onMounted(load)
 .role-card:hover { border-color: rgba(74,222,128,0.3) !important; }
 
 .role-icon-wrap {
-  width: 40px; height: 40px; border-radius: 10px;
+  width: 40px; height: 40px;
   background: rgba(255,255,255,0.06);
   display: flex; align-items: center; justify-content: center;
 }
