@@ -17,10 +17,14 @@ System CRM zbudowany w architekturze **Modular Monolith** z oddzielonym backende
 | Symfony | 7.4 LTS | Framework PHP |
 | Doctrine ORM | 3.6 | Warstwa bazy danych (ORM) |
 | Doctrine Migrations | 3.7 | Wersjonowanie schematu DB |
-| MySQL | 8.0+ | Baza danych |
+| MySQL | 8.0+ | Baza danych (produkcja) |
+| SQLite | 3.x | Baza danych (testy) |
 | LexikJWT Bundle | 3.2 | Uwierzytelnianie JWT |
 | Symfony Security | 7.4 | Firewalle, access control |
-| Symfony Maker | 1.67 | Generator kodu (dev) |
+| NelmioCors Bundle | 2.6 | Obsługa CORS |
+| PHPUnit | 12 | Testy jednostkowe i integracyjne |
+| Psalm | 6.x | Statyczna analiza PHP |
+| PHP CS Fixer | 3.x | Formatowanie kodu PHP |
 
 ### Frontend
 | Technologia | Wersja | Rola |
@@ -32,6 +36,8 @@ System CRM zbudowany w architekturze **Modular Monolith** z oddzielonym backende
 | Vue Router | 4.x | Routing SPA |
 | Pinia | 2.x | State management |
 | Axios | 1.x | Klient HTTP |
+| Playwright | 1.x | Testy E2E (end-to-end) |
+| ESLint | 9.x | Linting TypeScript/Vue |
 | MDI Icons | — | Zestaw ikon Material Design |
 
 ---
@@ -51,6 +57,9 @@ symfony_crm_boiler/
 │   │   ├── routes.yaml          ← Auto-discovery kontrolerów
 │   │   └── services.yaml        ← DI z podziałem per moduł
 │   ├── migrations/              ← Doctrine Migrations
+│   ├── tests/
+│   │   ├── Unit/                ← Testy jednostkowe (PHPUnit)
+│   │   └── Integration/         ← Testy integracyjne (PHPUnit + SQLite)
 │   └── src/
 │       ├── Kernel.php
 │       ├── Modules/
@@ -67,6 +76,11 @@ symfony_crm_boiler/
 │           └── ValueObject/     ← Email (przykład)
 │
 └── frontend/                    ← Vue 3 SPA
+    ├── e2e/                     ← Testy E2E Playwright
+    │   ├── helpers/auth.ts      ← loginViaApi, login, logout
+    │   ├── auth.spec.ts         ← Testy logowania i sesji
+    │   ├── customers.spec.ts    ← Testy CRUD kontrahentów
+    │   └── admin.spec.ts        ← Testy użytkowników i ról
     └── src/
         ├── api/                 ← Warstwa HTTP (axios per moduł)
         ├── composables/         ← useNotify (snackbar)
@@ -214,7 +228,6 @@ php bin/console app:db:seed --fresh
 > ⚠️ **Ważne:** Poniższe komendy uruchamiaj zawsze z katalogu `backend/` — nie z głównego katalogu projektu!
 
 ```bash
-# Upewnij się że jesteś w katalogu backend/
 cd backend
 
 # Symfony CLI (zalecane)
@@ -301,20 +314,22 @@ curl http://localhost:8000/api/auth/me \
 
 ## Testy
 
+### Testy jednostkowe i integracyjne (PHPUnit)
+
 Projekt zawiera **testy jednostkowe** i **integracyjne** backendu napisane w PHPUnit 12.
 
-### Środowisko testowe
+#### Środowisko testowe
 
 | Narzędzie | Rola |
 |---|---|
 | PHPUnit 12 | Framework testowy |
 | `symfony/test-pack` | WebTestCase, BrowserKit |
 | `dama/doctrine-test-bundle` | Rollback transakcji po każdym teście integracyjnym |
-| SQLite (in-memory) | Izolowana baza dla testów — nie wymaga MySQL |
+| SQLite | Izolowana baza dla testów — nie wymaga MySQL |
 
 Każdy test integracyjny jest automatycznie owijany w transakcję i wycofywany po zakończeniu — baza pozostaje czysta między testami.
 
-### Struktura testów
+#### Struktura testów
 
 ```
 backend/tests/
@@ -341,11 +356,14 @@ backend/tests/
         └── DashboardApiTest.php  # Statystyki, liczniki, autoryzacja
 ```
 
-### Uruchamianie testów
+#### Uruchamianie testów PHPUnit
 
 > Wszystkie komendy wykonuj z katalogu `backend/`
 
 ```bash
+# Inicjalizacja bazy testowej (pierwsze uruchomienie lub po zmianie encji)
+php bin/console doctrine:schema:create --env=test
+
 # Wszystkie testy (jednostkowe + integracyjne)
 php bin/phpunit
 
@@ -365,21 +383,122 @@ php bin/phpunit --filter testGetFullName
 php bin/phpunit --coverage-html var/coverage
 ```
 
-### Inicjalizacja bazy testowej
-
-Przy pierwszym uruchomieniu (lub po zmianie encji) utwórz schemat testowej bazy SQLite:
-
-```bash
-php bin/console doctrine:schema:create --env=test
-```
-
-### Wyniki
+#### Wyniki
 
 ```
 Tests: 112, Assertions: 279
  ✓ 70 testów jednostkowych
  ✓ 42 testy integracyjne
 ```
+
+---
+
+### Testy E2E (Playwright)
+
+Testy end-to-end sprawdzają działanie pełnej aplikacji (frontend + backend) w przeglądarce Chromium.
+
+> **Wymaganie:** przed uruchomieniem E2E musi działać backend na porcie 8000
+> (`symfony server:start` lub `php -S 127.0.0.1:8000 -t public`)
+
+#### Scenariusze testowe
+
+| Plik | Scenariusze | Liczba testów |
+|---|---|---|
+| `e2e/auth.spec.ts` | Logowanie, wylogowanie, przekierowania, token w localStorage | 8 |
+| `e2e/customers.spec.ts` | CRUD kontrahentów, wyszukiwanie, nawigacja sidebar | 7 |
+| `e2e/admin.spec.ts` | CRUD użytkowników CRM, CRUD ról dostępu | 10 |
+
+**Łącznie: 25 testów E2E**
+
+#### Uruchamianie testów E2E
+
+> Wszystkie komendy wykonuj z katalogu `frontend/`
+
+```bash
+# Uruchom wszystkie testy E2E (headless)
+npm run e2e
+
+# Tryb interaktywny z UI Playwright (wizualne debugowanie)
+npm run e2e:ui
+
+# Z widoczną przeglądarką
+npm run e2e:headed
+
+# Otwórz ostatni raport HTML
+npm run e2e:report
+
+# Konkretny plik testów
+npx playwright test e2e/auth.spec.ts
+
+# Konkretny test
+npx playwright test --grep "poprawne logowanie"
+```
+
+#### Instalacja przeglądarek Playwright (pierwsze uruchomienie)
+
+```bash
+cd frontend
+npx playwright install chromium
+```
+
+---
+
+## Jakość kodu
+
+### PHP — statyczna analiza i formatowanie
+
+#### Psalm (statyczna analiza)
+
+```bash
+cd backend
+
+# Analiza statyczna (bez cache)
+vendor/bin/psalm --no-cache
+
+# Z raportem w formacie GitHub Actions
+vendor/bin/psalm --no-cache --output-format=github
+```
+
+#### PHP CS Fixer (formatowanie kodu)
+
+```bash
+cd backend
+
+# Sprawdź styl kodu (bez zmian)
+vendor/bin/php-cs-fixer fix --dry-run --diff
+
+# Automatyczna naprawa stylu kodu
+vendor/bin/php-cs-fixer fix
+```
+
+### Frontend — ESLint
+
+```bash
+cd frontend
+
+# Sprawdź błędy
+npm run lint
+
+# Automatyczna naprawa
+npm run lint:fix
+```
+
+---
+
+## CI/CD — GitHub Actions
+
+Projekt posiada pełny pipeline CI składający się z 4 równoległych jobów:
+
+| Job | Narzędzia | Co sprawdza |
+|---|---|---|
+| `backend-static` | PHP CS Fixer, Psalm | Styl kodu i analiza statyczna PHP |
+| `backend-tests` | PHPUnit + SQLite | 112 testów jednostkowych i integracyjnych |
+| `frontend` | ESLint, Vite Build | Linting TypeScript/Vue + build produkcyjny |
+| `e2e` | Playwright (Chromium) | 25 testów E2E (wymaga sukcesu backend-tests i frontend) |
+
+Pipeline uruchamia się automatycznie przy każdym `push` lub `pull request` do gałęzi `main` i `develop`.
+
+Po zakończeniu testu E2E dostępny jest artefakt **`playwright-report`** (HTML raport, 14 dni) w zakładce Actions → wybrane uruchomienie → Artifacts.
 
 ---
 
@@ -402,9 +521,12 @@ php bin/console app:db:seed --fresh                  # Czyszczenie + seed
 php bin/console app:db:seed --admin-email=x@y.pl     # Własny e-mail
 
 # Frontend
-npm run dev      # Dev server (hot reload)
-npm run build    # Build produkcyjny
-npm run preview  # Podgląd buildu produkcyjnego
+npm run dev        # Dev server (hot reload)
+npm run build      # Build produkcyjny
+npm run preview    # Podgląd buildu produkcyjnego
+npm run lint       # ESLint
+npm run e2e        # Testy E2E Playwright
+npm run e2e:ui     # Playwright UI (interaktywny)
 ```
 
 ---
