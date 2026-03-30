@@ -15,23 +15,23 @@ final class RoleController extends AbstractApiController
 {
     public function __construct(private readonly RoleService $roleService) {}
 
+    private function serialize(\App\Modules\Access\Entity\Role $r): array
+    {
+        return ['id' => $r->getId(), 'name' => $r->getName(), 'description' => $r->getDescription()];
+    }
+
     /** GET /api/access/roles */
     #[Route('', name: 'index', methods: ['GET'])]
     public function index(): JsonResponse
     {
-        $roles = array_map(
-            fn ($r) => ['id' => $r->getId(), 'name' => $r->getName(), 'description' => $r->getDescription()],
-            $this->roleService->findAll()
-        );
-        return $this->success($roles);
+        return $this->success(array_map($this->serialize(...), $this->roleService->findAll()));
     }
 
     /** GET /api/access/roles/{id} */
     #[Route('/{id}', name: 'show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(int $id): JsonResponse
     {
-        $r = $this->roleService->findById($id);
-        return $this->success(['id' => $r->getId(), 'name' => $r->getName(), 'description' => $r->getDescription()]);
+        return $this->success($this->serialize($this->roleService->findById($id)));
     }
 
     /** POST /api/access/roles */
@@ -39,8 +39,14 @@ final class RoleController extends AbstractApiController
     public function create(Request $request): JsonResponse
     {
         $data = $request->toArray();
-        $role = $this->roleService->create($data['name'] ?? '', $data['description'] ?? null);
-        return $this->success(['id' => $role->getId(), 'name' => $role->getName()], 201);
+        $name = trim($data['name'] ?? '');
+
+        if ($name === '') {
+            return $this->error('Pole "name" jest wymagane.', 422);
+        }
+
+        $role = $this->roleService->create($name, $data['description'] ?? null);
+        return $this->success($this->serialize($role), 201);
     }
 
     /** PUT /api/access/roles/{id} */
@@ -48,15 +54,26 @@ final class RoleController extends AbstractApiController
     public function update(int $id, Request $request): JsonResponse
     {
         $data = $request->toArray();
-        $role = $this->roleService->update($id, $data['name'] ?? '', $data['description'] ?? null);
-        return $this->success(['id' => $role->getId(), 'name' => $role->getName()]);
+        $name = trim($data['name'] ?? '');
+
+        if ($name === '') {
+            return $this->error('Pole "name" jest wymagane.', 422);
+        }
+
+        $role = $this->roleService->update($id, $name, $data['description'] ?? null);
+        return $this->success($this->serialize($role));
     }
 
     /** DELETE /api/access/roles/{id} */
     #[Route('/{id}', name: 'delete', methods: ['DELETE'], requirements: ['id' => '\d+'])]
     public function delete(int $id): JsonResponse
     {
-        $this->roleService->delete($id);
+        try {
+            $this->roleService->delete($id);
+        } catch (\LogicException $e) {
+            return $this->error($e->getMessage(), 409);
+        }
+
         return $this->success(null, 204);
     }
 }

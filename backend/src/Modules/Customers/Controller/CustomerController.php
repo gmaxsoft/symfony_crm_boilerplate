@@ -68,7 +68,13 @@ final class CustomerController extends AbstractApiController
     #[Route('', name: 'create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        $customer = $this->customerService->create($request->toArray());
+        $data = $request->toArray();
+
+        if (trim($data['name'] ?? '') === '') {
+            return $this->error('Pole "name" jest wymagane.', 422);
+        }
+
+        $customer = $this->customerService->create($data);
         return $this->success($this->serialize($customer), 201);
     }
 

@@ -49,14 +49,21 @@ final class UserController extends AbstractApiController
     public function create(Request $request): JsonResponse
     {
         $d = $request->toArray();
+
+        $missing = array_filter(['email', 'password', 'firstName', 'lastName', 'roleId'], fn ($k) => empty($d[$k]));
+        if ($missing !== []) {
+            return $this->error(sprintf('Brakujące pola: %s.', implode(', ', $missing)), 422);
+        }
+
         $user = $this->userService->create(
-            email:         $d['email'] ?? '',
-            plainPassword: $d['password'] ?? '',
-            firstName:     $d['firstName'] ?? '',
-            lastName:      $d['lastName'] ?? '',
-            roleId:        (int) ($d['roleId'] ?? 0),
+            email:         $d['email'],
+            plainPassword: $d['password'],
+            firstName:     $d['firstName'],
+            lastName:      $d['lastName'],
+            roleId:        (int) $d['roleId'],
             isActive:      (bool) ($d['isActive'] ?? true),
         );
+
         return $this->success($this->serialize($user), 201);
     }
 
