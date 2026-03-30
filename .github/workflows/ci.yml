@@ -197,13 +197,19 @@ jobs:
             -out config/jwt/public.pem \
             -passin pass:venom_crm_jwt_secret 2>/dev/null
 
-      - name: Utwórz .env.local (wymuś loadEnv → załaduje .env.test po .env)
+      - name: Przygotuj zmienne środowiskowe dla PHP dev server (SQLite)
         working-directory: backend
         run: |
-          # Symfony bootEnv() pomija .env.test gdy brak .env.local i env='test'.
-          # Pusty .env.local przełącza bootEnv na ścieżkę loadEnv(), która
-          # ładuje: .env → .env.test (override) → DATABASE_URL = SQLite ✓
+          # Symfony bootEnv() w PHP dev server (bez --env=test) nie ładuje .env.test.
+          #
+          # Strategia:
+          # 1. touch .env.local → bootEnv przechodzi przez loadEnv() (zamiast prostego load)
+          # 2. .env.test.local z ABSOLUTNĄ ścieżką SQLite → załadowany OSTATNI z override=true
+          #    gwarantuje DATABASE_URL = sqlite (bez %kernel.project_dir% który może nie działać)
           touch .env.local
+          printf 'APP_ENV=test\nDATABASE_URL="sqlite:///'"$(pwd)"'/var/test.db"\n' > .env.test.local
+          echo "Prepared .env.local and .env.test.local:"
+          cat .env.test.local
 
       - name: Utwórz schemat SQLite i zaseeduj bazę danych
         working-directory: backend
@@ -215,7 +221,6 @@ jobs:
       - name: Uruchom PHP dev server w tle (port 8000)
         working-directory: backend
         run: |
-          export APP_ENV=test
           php -S 127.0.0.1:8000 -t public > /tmp/php-server.log 2>&1 &
           echo "PHP_SERVER_PID=$!" >> $GITHUB_ENV
 

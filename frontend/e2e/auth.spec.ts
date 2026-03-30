@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { ADMIN, login, loginViaApi, logout } from './helpers/auth'
+import { login, loginViaApi, logout } from './helpers/auth'
 
 test.describe('Autoryzacja', () => {
   test('przekierowanie z / na /login gdy brak tokenu', async ({ page }) => {
@@ -37,7 +37,7 @@ test.describe('Autoryzacja', () => {
     await login(page)
     const token = await page.evaluate(() => localStorage.getItem('venom_token'))
     expect(token).not.toBeNull()
-    expect(token!.length).toBeGreaterThan(10)
+    expect(typeof token === 'string' && token.length).toBeGreaterThan(10)
   })
 
   test('wylogowanie usuwa token i przekierowuje na /login', async ({ page }) => {
