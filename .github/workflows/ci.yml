@@ -200,16 +200,17 @@ jobs:
       - name: Przygotuj zmienne środowiskowe dla PHP dev server (SQLite)
         working-directory: backend
         run: |
-          # Symfony bootEnv() w PHP dev server (bez --env=test) nie ładuje .env.test.
+          # Symfony's bootEnv() ładuje pliki w tej kolejności gdy .env.local istnieje:
+          #   .env → .env.local → .env.{APP_ENV} → .env.{APP_ENV}.local
           #
-          # Strategia:
-          # 1. touch .env.local → bootEnv przechodzi przez loadEnv() (zamiast prostego load)
-          # 2. .env.test.local z ABSOLUTNĄ ścieżką SQLite → załadowany OSTATNI z override=true
-          #    gwarantuje DATABASE_URL = sqlite (bez %kernel.project_dir% który może nie działać)
-          touch .env.local
-          printf 'APP_ENV=test\nDATABASE_URL="sqlite:///'"$(pwd)"'/var/test.db"\n' > .env.test.local
-          echo "Prepared .env.local and .env.test.local:"
-          cat .env.test.local
+          # Kluczowe: .env.local musi zawierać APP_ENV=test, inaczej bootEnv ustawi
+          # APP_ENV=dev (z .env) i nigdy nie załaduje .env.test ani .env.test.local.
+          #
+          # .env.test.local nadpisuje DATABASE_URL absolutną ścieżką (bez %kernel.project_dir%)
+          printf 'APP_ENV=test\n' > .env.local
+          printf 'DATABASE_URL="sqlite:///'"$(pwd)"'/var/test.db"\n' > .env.test.local
+          echo "=== .env.local ===" && cat .env.local
+          echo "=== .env.test.local ===" && cat .env.test.local
 
       - name: Utwórz schemat SQLite i zaseeduj bazę danych
         working-directory: backend
