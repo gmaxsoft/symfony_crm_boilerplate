@@ -98,11 +98,13 @@ async function submit() {
     await authStore.login(form.email, form.password)
     router.push('/dashboard')
   } catch (e: any) {
-    error.value =
-      e.response?.data?.message ||
-      e.response?.status === 401
-        ? 'Nieprawidłowy e-mail lub hasło.'
-        : 'Błąd połączenia z serwerem. Spróbuj ponownie.'
+    if (!e.response) {
+      error.value = 'Błąd połączenia z serwerem. Upewnij się, że backend działa.'
+    } else if (e.response.status === 401) {
+      error.value = e.response.data?.message || 'Nieprawidłowy e-mail lub hasło.'
+    } else {
+      error.value = e.response.data?.message || `Błąd serwera (${e.response.status}). Spróbuj ponownie.`
+    }
   } finally {
     loading.value = false
   }
