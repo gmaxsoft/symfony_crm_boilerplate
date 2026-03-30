@@ -1,0 +1,149 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Anuluj poprzednie uruchomienie tego samego workflow dla tego samego ref-a
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  #  BACKEND ▸ PHP CS Fixer + Psalm
+  # ═══════════════════════════════════════════════════════════════
+  backend-static:
+    name: "PHP — CS Fixer & Psalm"
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: intl, pdo_sqlite, sqlite3, mbstring, tokenizer, xml, ctype, iconv, igbinary
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Generate JWT keypair (wymagane przez Psalm do analizy security stubs)
+        run: |
+          mkdir -p config/jwt
+          openssl genrsa -aes256 \
+            -passout pass:venom_crm_jwt_secret \
+            -out config/jwt/private.pem 4096 2>/dev/null
+          openssl rsa -pubout \
+            -in config/jwt/private.pem \
+            -out config/jwt/public.pem \
+            -passin pass:venom_crm_jwt_secret 2>/dev/null
+
+      - name: PHP CS Fixer — sprawdź styl kodu (bez modyfikacji)
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+
+      - name: Psalm — analiza statyczna
+        run: vendor/bin/psalm --no-cache --output-format=github
+
+  # ═══════════════════════════════════════════════════════════════
+  #  BACKEND ▸ PHPUnit (Unit + Integration)
+  # ═══════════════════════════════════════════════════════════════
+  backend-tests:
+    name: "PHP — PHPUnit"
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: intl, pdo_sqlite, sqlite3, mbstring, tokenizer, xml, ctype, iconv, igbinary
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Generate JWT keypair
+        run: |
+          mkdir -p config/jwt
+          openssl genrsa -aes256 \
+            -passout pass:venom_crm_jwt_secret \
+            -out config/jwt/private.pem 4096 2>/dev/null
+          openssl rsa -pubout \
+            -in config/jwt/private.pem \
+            -out config/jwt/public.pem \
+            -passin pass:venom_crm_jwt_secret 2>/dev/null
+
+      - name: Utwórz schemat bazy SQLite (środowisko testowe)
+        run: |
+          rm -f var/test.db
+          php bin/console doctrine:schema:create --env=test
+
+      - name: PHPUnit — testy jednostkowe
+        run: php bin/phpunit --testsuite Unit --no-coverage
+
+      - name: PHPUnit — testy integracyjne
+        run: php bin/phpunit --testsuite Integration --no-coverage
+
+  # ═══════════════════════════════════════════════════════════════
+  #  FRONTEND ▸ ESLint + TypeScript + Vite Build
+  # ═══════════════════════════════════════════════════════════════
+  frontend:
+    name: "Vue — ESLint & Build"
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: ESLint — sprawdź błędy Vue/TypeScript
+        run: npm run lint
+
+      - name: TypeScript + Vite Build
+        run: npm run build
+        env:
+          # Pusty URL = Vite buduje bez proxy (produkcja musi mieć właściwy URL)
+          VITE_API_URL: ""

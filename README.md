@@ -1,5 +1,7 @@
 # VENOM CRM — Boilerplate
 
+[![CI](https://github.com/gmaxsoft/symfony_crm_boilerplate/actions/workflows/ci.yml/badge.svg)](https://github.com/gmaxsoft/symfony_crm_boilerplate/actions/workflows/ci.yml)
+
 System CRM zbudowany w architekturze **Modular Monolith** z oddzielonym backendem (REST API) i frontendem (SPA).
 
 ![VENOM CRM — podgląd interfejsu](preview.webp)
