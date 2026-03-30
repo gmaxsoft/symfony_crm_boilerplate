@@ -201,16 +201,30 @@ jobs:
         working-directory: backend
         run: |
           rm -f var/test.db
+          # --env=test jawnie ładuje .env.test (Symfony Console robi to poprawnie)
           php bin/console doctrine:schema:create --env=test
-          APP_ENV=test php bin/console app:db:seed --env=test
+          php bin/console app:db:seed --env=test
 
       - name: Uruchom PHP dev server w tle (port 8000)
         working-directory: backend
         run: |
-          APP_ENV=test php -S 127.0.0.1:8000 -t public > /tmp/php-server.log 2>&1 &
+          # Symfony bootEnv() NIE ładuje .env.test gdy brak .env.local (pomija test envs).
+          # Eksportujemy wszystkie zmienne jawnie, żeby Symfony je zastało w $_SERVER
+          # i nie nadpisało MySQL URL-em z .env.
+          export APP_ENV=test
+          export APP_DEBUG=0
+          export APP_SECRET=venom_test_secret_key_do_not_use_in_prod
+          export DATABASE_URL="sqlite:///$(pwd)/var/test.db"
+          export JWT_SECRET_KEY="$(pwd)/config/jwt/private.pem"
+          export JWT_PUBLIC_KEY="$(pwd)/config/jwt/public.pem"
+          export JWT_PASSPHRASE=venom_crm_jwt_secret
+          export JWT_TTL=3600
+          export CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+
+          php -S 127.0.0.1:8000 -t public > /tmp/php-server.log 2>&1 &
           echo "PHP_SERVER_PID=$!" >> $GITHUB_ENV
+
           # curl bez -f: exit 0 dla każdego HTTP (nawet 404), non-0 tylko przy braku połączenia
-          # timeout 30s zamiast 15s — RSA keygen + composer mogą chwilę trwać
           timeout 30 bash -c 'until curl -s -o /dev/null http://127.0.0.1:8000; do sleep 1; done' \
             || { echo "=== PHP server log ===" && cat /tmp/php-server.log && exit 1; }
           echo "PHP server is ready"
