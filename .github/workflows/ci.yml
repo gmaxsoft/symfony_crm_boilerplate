@@ -151,3 +151,95 @@ jobs:
         env:
           # Pusty URL = Vite buduje bez proxy (produkcja musi mieć właściwy URL)
           VITE_API_URL: ""
+
+  # ═══════════════════════════════════════════════════════════════
+  #  E2E ▸ Playwright (Chromium)
+  # ═══════════════════════════════════════════════════════════════
+  e2e:
+    name: "E2E — Playwright"
+    runs-on: ubuntu-24.04
+    # E2E wymaga działającego backendu i frontendu
+    needs: [backend-tests, frontend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── PHP + Backend ────────────────────────────────────────────
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: intl, pdo_sqlite, sqlite3, mbstring, tokenizer, xml, ctype, iconv, igbinary
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        working-directory: backend
+        run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Generate JWT keypair
+        working-directory: backend
+        run: |
+          mkdir -p config/jwt
+          openssl genrsa -aes256 \
+            -passout pass:venom_crm_jwt_secret \
+            -out config/jwt/private.pem 4096 2>/dev/null
+          openssl rsa -pubout \
+            -in config/jwt/private.pem \
+            -out config/jwt/public.pem \
+            -passin pass:venom_crm_jwt_secret 2>/dev/null
+
+      - name: Utwórz schemat SQLite i zaseeduj bazę danych
+        working-directory: backend
+        run: |
+          rm -f var/test.db
+          php bin/console doctrine:schema:create --env=test
+          APP_ENV=test php bin/console app:db:seed --env=test
+
+      - name: Uruchom PHP dev server w tle (port 8000)
+        working-directory: backend
+        run: |
+          APP_ENV=test php -S 127.0.0.1:8000 -t public > /tmp/php-server.log 2>&1 &
+          echo "PHP_SERVER_PID=$!" >> $GITHUB_ENV
+          # Poczekaj aż serwer odpowie
+          timeout 15 bash -c 'until curl -sf http://127.0.0.1:8000/api/health 2>/dev/null || curl -sf http://127.0.0.1:8000 2>/dev/null; do sleep 1; done'
+
+      # ── Node.js + Frontend ───────────────────────────────────────
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install npm dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Zainstaluj przeglądarki Playwright (Chromium)
+        working-directory: frontend
+        run: npx playwright install chromium --with-deps
+
+      # ── Testy E2E ────────────────────────────────────────────────
+      - name: Playwright E2E tests
+        working-directory: frontend
+        run: npx playwright test
+        env:
+          VITE_API_URL: ""
+          CI: "true"
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 14
