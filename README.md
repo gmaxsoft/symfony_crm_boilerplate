@@ -207,11 +207,16 @@ php bin/console app:db:seed --fresh
 
 #### Uruchom serwer deweloperski
 
+> ⚠️ **Ważne:** Poniższe komendy uruchamiaj zawsze z katalogu `backend/` — nie z głównego katalogu projektu!
+
 ```bash
+# Upewnij się że jesteś w katalogu backend/
+cd backend
+
 # Symfony CLI (zalecane)
 symfony server:start
 
-# Lub wbudowany serwer PHP
+# Lub wbudowany serwer PHP (alternatywa bez Symfony CLI)
 php -S 0.0.0.0:8000 -t public
 ```
 
@@ -226,15 +231,9 @@ cd ../frontend
 npm install
 ```
 
-#### Zmienne środowiskowe
-
-Plik `.env` jest gotowy do pracy lokalnie:
-
-```dotenv
-VITE_API_URL=http://localhost:8000
-```
-
 #### Uruchom serwer deweloperski
+
+> ⚠️ **Ważne:** Poniższe komendy uruchamiaj z katalogu `frontend/` — nie z głównego katalogu projektu!
 
 ```bash
 npm run dev
