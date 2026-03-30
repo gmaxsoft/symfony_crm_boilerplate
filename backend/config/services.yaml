@@ -7,43 +7,39 @@ services:
         autowire: true
         autoconfigure: true
 
-    # -------------------------------------------------------------------------
-    # Shared kernel — klasy pomocnicze, value objects, wyjątki, traity
-    # -------------------------------------------------------------------------
+    # Shared kernel
     App\Shared\:
         resource: '../src/Shared/'
 
-    # -------------------------------------------------------------------------
-    # Moduły — każdy moduł rejestrowany osobno dla przejrzystości
-    # Symfony automatycznie rozpoznaje kontrolery, komendy, event-subscribery
-    # na podstawie interfejsów i atrybutów dzięki autoconfigure: true
-    # -------------------------------------------------------------------------
-    App\Modules\User\:
-        resource: '../src/Modules/User/'
+    # Auth — brak własnych encji, używa User z modułu Admin
+    App\Modules\Auth\:
+        resource: '../src/Modules/Auth/'
         exclude:
-            - '../src/Modules/User/Entity/'
-            - '../src/Modules/User/DTO/'
+            - '../src/Modules/Auth/DTO/'
 
-    App\Modules\Contact\:
-        resource: '../src/Modules/Contact/'
-        exclude:
-            - '../src/Modules/Contact/Entity/'
-            - '../src/Modules/Contact/DTO/'
-
-    App\Modules\Company\:
-        resource: '../src/Modules/Company/'
-        exclude:
-            - '../src/Modules/Company/Entity/'
-            - '../src/Modules/Company/DTO/'
-
-    App\Modules\Deal\:
-        resource: '../src/Modules/Deal/'
-        exclude:
-            - '../src/Modules/Deal/Entity/'
-            - '../src/Modules/Deal/DTO/'
-
+    # Dashboard
     App\Modules\Dashboard\:
         resource: '../src/Modules/Dashboard/'
         exclude:
-            - '../src/Modules/Dashboard/Entity/'
             - '../src/Modules/Dashboard/DTO/'
+
+    # Customers
+    App\Modules\Customers\:
+        resource: '../src/Modules/Customers/'
+        exclude:
+            - '../src/Modules/Customers/Entity/'
+            - '../src/Modules/Customers/DTO/'
+
+    # Access (Role)
+    App\Modules\Access\:
+        resource: '../src/Modules/Access/'
+        exclude:
+            - '../src/Modules/Access/Entity/'
+            - '../src/Modules/Access/DTO/'
+
+    # Admin (User)
+    App\Modules\Admin\:
+        resource: '../src/Modules/Admin/'
+        exclude:
+            - '../src/Modules/Admin/Entity/'
+            - '../src/Modules/Admin/DTO/'

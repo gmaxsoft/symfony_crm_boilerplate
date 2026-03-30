@@ -1,24 +1,21 @@
 # yaml-language-server: $schema=../vendor/symfony/routing/Loader/schema/routing.schema.json
 
-# Routing dla architektury Modular Monolith
-# Każdy moduł skanowany jest osobno — trasy definiowane przez atrybuty PHP #[Route]
-
-modules_user:
-    resource: '../src/Modules/User/Controller/'
-    type: attribute
-
-modules_contact:
-    resource: '../src/Modules/Contact/Controller/'
-    type: attribute
-
-modules_company:
-    resource: '../src/Modules/Company/Controller/'
-    type: attribute
-
-modules_deal:
-    resource: '../src/Modules/Deal/Controller/'
+modules_auth:
+    resource: '../src/Modules/Auth/Controller/'
     type: attribute
 
 modules_dashboard:
     resource: '../src/Modules/Dashboard/Controller/'
+    type: attribute
+
+modules_customers:
+    resource: '../src/Modules/Customers/Controller/'
+    type: attribute
+
+modules_access:
+    resource: '../src/Modules/Access/Controller/'
+    type: attribute
+
+modules_admin:
+    resource: '../src/Modules/Admin/Controller/'
     type: attribute
