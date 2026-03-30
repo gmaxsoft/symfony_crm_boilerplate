@@ -11,6 +11,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Wymuś Node.js 24 dla wewnętrznych akcji GitHub (eliminuje deprecation warnings)
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   # ═══════════════════════════════════════════════════════════════
   #  BACKEND ▸ PHP CS Fixer + Psalm
