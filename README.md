@@ -2,6 +2,8 @@
 
 System CRM zbudowany w architekturze **Modular Monolith** z oddzielonym backendem (REST API) i frontendem (SPA).
 
+![VENOM CRM — podgląd interfejsu](preview.webp)
+
 ---
 
 ## Stack technologiczny
