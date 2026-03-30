@@ -297,6 +297,90 @@ curl http://localhost:8000/api/auth/me \
 
 ---
 
+## Testy
+
+Projekt zawiera **testy jednostkowe** i **integracyjne** backendu napisane w PHPUnit 12.
+
+### Środowisko testowe
+
+| Narzędzie | Rola |
+|---|---|
+| PHPUnit 12 | Framework testowy |
+| `symfony/test-pack` | WebTestCase, BrowserKit |
+| `dama/doctrine-test-bundle` | Rollback transakcji po każdym teście integracyjnym |
+| SQLite (in-memory) | Izolowana baza dla testów — nie wymaga MySQL |
+
+Każdy test integracyjny jest automatycznie owijany w transakcję i wycofywany po zakończeniu — baza pozostaje czysta między testami.
+
+### Struktura testów
+
+```
+backend/tests/
+├── Unit/
+│   ├── Entity/
+│   │   ├── RoleTest.php          # Stałe, gettery/settery, kolekcja użytkowników
+│   │   ├── UserTest.php          # fullName, normalizacja ról ROLE_*, lifecycle
+│   │   └── CustomerTest.php      # Pola opcjonalne, domyślny status, onPreUpdate
+│   └── Service/
+│       ├── RoleServiceTest.php   # CRUD, delete z użytkownikami → LogicException
+│       ├── CustomerServiceTest.php  # Paginacja, opiekun, NotFoundException
+│       └── UserServiceTest.php   # Hashowanie hasła, walidacja roli
+└── Integration/
+    ├── ApiTestCase.php           # Klasa bazowa: helpers JWT, tworzenie danych
+    ├── Auth/
+    │   └── AuthApiTest.php       # POST /login, GET /me (z/bez tokenu)
+    ├── Access/
+    │   └── RoleApiTest.php       # CRUD ról, 409 przy usuwaniu roli z użytkownikami
+    ├── Admin/
+    │   └── UserApiTest.php       # CRUD użytkowników, walidacja 422/404
+    ├── Customers/
+    │   └── CustomerApiTest.php   # CRUD, paginacja, wyszukiwanie
+    └── Dashboard/
+        └── DashboardApiTest.php  # Statystyki, liczniki, autoryzacja
+```
+
+### Uruchamianie testów
+
+> Wszystkie komendy wykonuj z katalogu `backend/`
+
+```bash
+# Wszystkie testy (jednostkowe + integracyjne)
+php bin/phpunit
+
+# Tylko testy jednostkowe
+php bin/phpunit --testsuite Unit
+
+# Tylko testy integracyjne
+php bin/phpunit --testsuite Integration
+
+# Konkretna klasa
+php bin/phpunit tests/Unit/Entity/UserTest.php
+
+# Konkretna metoda
+php bin/phpunit --filter testGetFullName
+
+# Z raportem pokrycia kodu (wymaga Xdebug lub PCOV)
+php bin/phpunit --coverage-html var/coverage
+```
+
+### Inicjalizacja bazy testowej
+
+Przy pierwszym uruchomieniu (lub po zmianie encji) utwórz schemat testowej bazy SQLite:
+
+```bash
+php bin/console doctrine:schema:create --env=test
+```
+
+### Wyniki
+
+```
+Tests: 112, Assertions: 279
+ ✓ 70 testów jednostkowych
+ ✓ 42 testy integracyjne
+```
+
+---
+
 ## Przydatne komendy
 
 ```bash
