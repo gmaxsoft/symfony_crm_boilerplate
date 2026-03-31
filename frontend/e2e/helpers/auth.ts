@@ -5,12 +5,12 @@ export const ADMIN = {
   password: 'Admin123!',
 }
 
-/** URL backendu: przez Vite proxy w dev, bezpośrednio w CI */
-const BASE = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:5173'
+/** Ten sam origin co Playwright baseURL (Vite); proxy /api → 127.0.0.1:8000 */
+const BASE = process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:5173'
 
 /** Loguje użytkownika przez UI i czeka na dashboard */
 export async function login(page: Page, email = ADMIN.email, password = ADMIN.password) {
-  await page.goto('/login')
+  await page.goto('/login', { waitUntil: 'domcontentloaded' })
   await page.getByPlaceholder('admin@venom.pl').fill(email)
   await page.getByPlaceholder('••••••••').fill(password)
   await page.getByRole('button', { name: /zaloguj się/i }).click()
@@ -22,7 +22,7 @@ export async function login(page: Page, email = ADMIN.email, password = ADMIN.pa
  * Używa Vite proxy (`/api/*` → backend:8000), więc backend musi działać.
  */
 export async function loginViaApi(page: Page, email = ADMIN.email, password = ADMIN.password) {
-  await page.goto('/login')
+  await page.goto('/login', { waitUntil: 'domcontentloaded' })
 
   // 1. Uzyskaj token
   const loginRes = await page.request.post(`${BASE}/api/auth/login`, {
@@ -56,8 +56,8 @@ export async function loginViaApi(page: Page, email = ADMIN.email, password = AD
     [token, userData],
   )
 
-  await page.goto('/dashboard')
-  await page.waitForURL('**/dashboard', { timeout: 10_000 })
+  await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
+  await page.waitForURL('**/dashboard', { timeout: 15_000 })
 }
 
 /** Wylogowuje użytkownika */

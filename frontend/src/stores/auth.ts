@@ -11,8 +11,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!token.value)
   const initials = computed(() => {
-    if (!user.value) return '?'
-    return (user.value.firstName[0] + user.value.lastName[0]).toUpperCase()
+    const fn = user.value?.firstName?.trim()
+    const ln = user.value?.lastName?.trim()
+    if (!fn?.[0] || !ln?.[0]) return '?'
+    return (fn[0] + ln[0]).toUpperCase()
   })
 
   async function login(email: string, password: string) {

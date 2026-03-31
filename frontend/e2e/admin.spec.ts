@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { loginViaApi, getToken } from './helpers/auth'
 
 const unique = (suffix: string) => `E2E-${suffix}-${Date.now()}`
-const API = (path: string) => `${process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:5173'}${path}`
+const API = (path: string) => `${process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:5173'}${path}`
 
 test.describe('Użytkownicy systemu CRM', () => {
   let adminRoleId: number
@@ -18,12 +18,12 @@ test.describe('Użytkownicy systemu CRM', () => {
     const roles: Array<{ id: number; name: string }> = (await res.json()).data ?? []
     adminRoleId = roles.find(r => r.name === 'Administrator')?.id ?? roles[0]?.id
 
-    await page.goto('/admin')
+    await page.goto('/admin', { waitUntil: 'domcontentloaded' })
     await page.waitForURL('**/admin')
   })
 
   test('strona użytkowników jest dostępna z sidebar', async ({ page }) => {
-    await page.goto('/dashboard')
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
     // Sidebar: v-list-item z :to="/admin" renderuje jako <a href="/admin">
     await page.locator('a[href="/admin"]').first().click()
     await page.waitForURL('**/admin')
@@ -114,12 +114,12 @@ test.describe('Użytkownicy systemu CRM', () => {
 test.describe('Uprawnienia / Role', () => {
   test.beforeEach(async ({ page }) => {
     await loginViaApi(page)
-    await page.goto('/access')
+    await page.goto('/access', { waitUntil: 'domcontentloaded' })
     await page.waitForURL('**/access')
   })
 
   test('strona ról jest dostępna z sidebar', async ({ page }) => {
-    await page.goto('/dashboard')
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
     // Sidebar: v-list-item z :to="/access" renderuje jako <a href="/access">
     await page.locator('a[href="/access"]').first().click()
     await page.waitForURL('**/access')

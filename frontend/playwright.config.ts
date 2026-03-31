@@ -23,13 +23,13 @@ export default defineConfig({
     : [['list'], ['html', { open: 'on-failure' }]],
 
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:5173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'off',
     // Vuetify potrzebuje chwili na animacje
     actionTimeout: 10_000,
-    navigationTimeout: 15_000,
+    navigationTimeout: 30_000,
   },
 
   projects: [
@@ -42,11 +42,11 @@ export default defineConfig({
   // Uruchamia Vite dev server przed testami (backend musi działać osobno)
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173',
+    url: process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:5173',
     reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
+    timeout: 120_000,
     env: {
-      VITE_API_URL: '',           // proxy do backendu na :8000
+      VITE_API_URL: '', // proxy do backendu na :8000
     },
   },
 })

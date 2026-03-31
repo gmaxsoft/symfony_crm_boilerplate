@@ -14,9 +14,10 @@ export default defineConfig({
     },
   },
   server: {
+    // Backend na CI: php -S 127.0.0.1:8000 — proxy na localhost:8000 często trafia w ::1 (brak nasłuchu)
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
     },

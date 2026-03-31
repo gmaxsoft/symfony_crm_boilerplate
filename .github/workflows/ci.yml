@@ -71,6 +71,9 @@ jobs:
   backend-tests:
     name: "PHP — PHPUnit"
     runs-on: ubuntu-24.04
+    env:
+      # Ponownie na poziomie joba — usuwa ostrzeżenia Node 20 dla checkout/cache w tym jobie
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     defaults:
       run:
         working-directory: backend
@@ -257,6 +260,8 @@ jobs:
         env:
           VITE_API_URL: ""
           CI: "true"
+          # Spójny origin z baseURL (uniknięcie localhost → ::1 przy PHP tylko na 127.0.0.1)
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:5173
 
       - name: Upload Playwright report
         if: always()
